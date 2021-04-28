@@ -5,35 +5,31 @@ import com.google.gson.JsonObject;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient;
 import me.ultrablacklinux.minemenufabric.client.util.AngleHelper;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.lwjgl.opengl.GL11;
 
-import java.util.LinkedList;
 import java.util.Map;
-
-
-/**
- * @variable circleEntries entries in the circle
- */
-
 
 public class MineMenuSelectScreen extends Screen {
     public static JsonObject jsonItems = new JsonObject();
-    private final int circleEntries = 8;
+    int circleEntries = jsonItems.size(); //at least 5!
+    int outerRadius;
+    int innerRadius;
 
 
     public MineMenuSelectScreen(JsonObject menuData) {
         super(new TranslatableText("minemenu.menu.title"));
         jsonItems = menuData;
         //sortItems();
+
+        outerRadius = 15 * circleEntries;
+        innerRadius = 5 * circleEntries;
 
     }
 
@@ -60,8 +56,6 @@ public class MineMenuSelectScreen extends Screen {
 
     private void renderGui(MatrixStack matrixStack, int mouseX, int mouseY) {
         int circleEntries = jsonItems.size();
-        int outerRadius = 15 * circleEntries;
-        int innerRadius = 5  * circleEntries;
 
         //int circleEntries = PingType.values().length - 1;
 
@@ -84,8 +78,8 @@ public class MineMenuSelectScreen extends Screen {
 
             boolean mouseIn = AngleHelper.isAngleBetween(mouseAngle, currentAngle, nextAngle);
 
-            boolean isHovered = !AngleHelper.isInsideCircle(mouseX, mouseY, centerX, centerY, 25)
-                    && AngleHelper.isInsideCircle(mouseX, mouseY, centerX, centerY, 75)
+            boolean isHovered = !AngleHelper.isInsideCircle(mouseX, mouseY, centerX, centerY, innerRadius)
+                    && AngleHelper.isInsideCircle(mouseX, mouseY, centerX, centerY,  outerRadius)
                     && mouseIn;
 
             double drawX = centerX;
@@ -122,34 +116,36 @@ public class MineMenuSelectScreen extends Screen {
             matrixStack.pop();
              */
 
+            //0x00000000
+            //0xOORRGGBB
+
             if (isHovered) {
                 this.drawDoughnutSegment(matrixStack,
-                        currentAngle,
-                        currentAngle + degrees / 2, centerX, centerY,
-                        outerRadius + 5,
-                        innerRadius, 0xCC000000); //TODO CUSTOM COLOR
-                this.drawDoughnutSegment(matrixStack,
-                        currentAngle + degrees / 2,
-                        currentAngle + degrees, centerX, centerY,
+                        currentAngle, currentAngle + degrees / 2, centerX, centerY,
                         outerRadius + 5, innerRadius,
-                        0xCC000000);
+                        0xCCA00000); //TODO CUSTOM COLOR
+                this.drawDoughnutSegment(matrixStack,
+                        currentAngle + degrees / 2, currentAngle + degrees, centerX, centerY,
+                        outerRadius + 5, innerRadius,
+                        0xCCA00000);
 
                 this.client.textRenderer.draw(matrixStack,
                         value.get("name").getAsString(),
                         centerX - this.client.textRenderer.getWidth(value.get("name").getAsString()) / 2.0F,
-                        centerY + outerRadius + 10, 0xFFFFFF);
+                        centerY + outerRadius + 10,
+                        0xFFFFFF);
             } else {
                 this.drawDoughnutSegment(matrixStack,
                         currentAngle,
                         currentAngle + degrees / 2, centerX, centerY,
                         outerRadius, innerRadius,
-                        0x90000000);
+                        0xD0212121);
                 this.drawDoughnutSegment(matrixStack,
                         currentAngle + degrees / 2,
                         currentAngle + degrees,
                         centerX, centerY,
                         outerRadius, innerRadius,
-                        0x90000000);
+                        0xD0212121);
             }
 
             currentAngle += degrees;
@@ -178,12 +174,11 @@ public class MineMenuSelectScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        int circleEntries = jsonItems.size();
+        boolean isInCategory = true;
         int centerX = this.client.getWindow().getScaledWidth() / 2;
         int centerY = this.client.getWindow().getScaledHeight() / 2;
-        if (!AngleHelper.isInsideCircle(mouseX, mouseY, centerX, centerY, 25)
-                && AngleHelper.isInsideCircle(mouseX, mouseY, centerX, centerY, 75)) {
-            //int circleEntries = 13; //circle entries
+        if (!AngleHelper.isInsideCircle(mouseX, mouseY, centerX, centerY, innerRadius)
+                && AngleHelper.isInsideCircle(mouseX, mouseY, centerX, centerY, outerRadius)) {
 
             int degrees = (int) (360.0D / circleEntries);
             int currentAngle = 360 - degrees / 2;
@@ -197,18 +192,28 @@ public class MineMenuSelectScreen extends Screen {
                 boolean mouseIn = AngleHelper.isAngleBetween(mouseAngle, currentAngle, nextAngle);
                 if (mouseIn) {
                     //action - do something with the circleEntry
-                    if (value.get("type").getAsString().equals("print")) client.player.sendChatMessage(
-                            value.get("data").getAsJsonObject().get("message").getAsString());
 
-                    if (value.get("type").getAsString().equals("category")) client.openScreen(new MineMenuSelectScreen(
-                            value.get("data").getAsJsonObject()));
+                    switch(value.get("type").getAsString()) {
+                        case "print":
+                            isInCategory = false;
+                            client.player.sendChatMessage(
+                                    value.get("data").getAsJsonObject().get("message").getAsString());
+                            break;
+
+                        case "category":
+                            isInCategory = true;
+                            client.openScreen(new MineMenuSelectScreen(value.get("data").getAsJsonObject()));
+                            break;
+                    }
                 }
 
                 currentAngle += degrees;
                 currentAngle = (int) AngleHelper.correctAngle(currentAngle);
             }
         }
-        this.client.openScreen(null);
+        else {
+            this.client.openScreen(null);
+        }
         return false;
     }
 

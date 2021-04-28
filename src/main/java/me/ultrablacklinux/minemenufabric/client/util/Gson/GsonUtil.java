@@ -12,4 +12,18 @@ public class GsonUtil {
         item.add("data", data);
         return item;
     }
+
+    public static JsonObject empty() {
+        return template("", "empty", "", new JsonObject());
+    }
+
+    public static JsonObject fixEntryAmount(JsonObject j) {
+        if (j.size() < 5) {
+            int togo = 5-j.size();
+            for (int i = 0; i < togo; i++) {
+                j.add(String.valueOf(j.size()+1), GsonUtil.empty());
+            }
+        }
+        return j;
+    }
 }

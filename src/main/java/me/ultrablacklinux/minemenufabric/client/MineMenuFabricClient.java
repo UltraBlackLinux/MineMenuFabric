@@ -23,7 +23,6 @@ public class MineMenuFabricClient implements ClientModInitializer {
                 "key.examplemod.spook", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R,
                 "category.examplemod.test"));
 
-
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
             if (mineMenuSelectScreen != null) this.mineMenuSelectScreen.tick();
         });
@@ -31,32 +30,51 @@ public class MineMenuFabricClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (keyBinding.wasPressed()) {
                 if (!(client.currentScreen instanceof MineMenuSelectScreen)) {
-                    JsonObject j = new JsonObject();
-                    JsonObject print1 = new JsonObject();
-                    JsonObject print2 = new JsonObject();
-
-                    print1.add("message", new JsonPrimitive("test123"));
-                    print2.add("message", new JsonPrimitive("321tset"));
-
-                    j.add(String.valueOf(j.size()),
-                            GsonUtil.template(
-                                    "test",
-                                    "minecraft:cookie",
-                                    "print",
-                                    print1
-                                    ));
-
-                    j.add(String.valueOf(j.size()),
-                            GsonUtil.template(
-                                    "test2",
-                                    "minecraft:red_wool",
-                                    "print",
-                                    print2));
-
-                    client.openScreen(new MineMenuSelectScreen(j));
+                    client.openScreen(new MineMenuSelectScreen(thing()));
                 }
             }
-        });
 
+        });
+    }
+
+    private JsonObject thing() {
+        JsonObject j = new JsonObject();
+
+        JsonObject print1 = new JsonObject();
+        print1.add("message", new JsonPrimitive("test123"));
+        j.add(String.valueOf(j.size()), GsonUtil.template(
+                "print1",
+                "minecraft:cookie",
+                "print",
+                print1
+        ));
+
+        JsonObject print2 = new JsonObject();
+        print2.add("message", new JsonPrimitive("321tset"));
+        j.add(String.valueOf(j.size()), GsonUtil.template(
+                "print2",
+                "minecraft:red_wool",
+                "print",
+                print2));
+
+
+        JsonObject category = new JsonObject();
+        category.add(String.valueOf(j.size()), GsonUtil.template(
+                "printincategory",
+                "minecraft:chest",
+                "print",
+                print2));
+
+        GsonUtil.fixEntryAmount(category);
+
+
+        j.add(String.valueOf(j.size()), GsonUtil.template(
+                "category1",
+                "minecraft:chest",
+                "category",
+                category));
+
+        GsonUtil.fixEntryAmount(j);
+        return j;
     }
 }
