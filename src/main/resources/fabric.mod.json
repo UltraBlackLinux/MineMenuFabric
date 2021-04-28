@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "minemenufabric",
+  "version": "${version}",
+  "name": "MineMenuFabric",
+  "description": "MineMenu for fabric",
+  "authors": [
+    "UltraBlackLinux"
+  ],
+  "contact": {
+    "website": "dgfg",
+    "repo": "dfjj"
+  },
+  "license": "MIT",
+  "icon": "assets/MineMenuFabric/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient"
+    ]
+  },
+  "mixins": [
+    "MineMenuFabric.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": "*"
+  },
+  "custom": {
+    "modmenu": [
+      "me.ultrablacklinux.minemenufabric.config.config."
+    ]
+  }
+}
