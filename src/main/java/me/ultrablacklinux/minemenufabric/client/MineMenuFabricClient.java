@@ -59,7 +59,7 @@ public class MineMenuFabricClient implements ClientModInitializer {
 
 
         JsonObject category = new JsonObject();
-        category.add(String.valueOf(j.size()), GsonUtil.template(
+        category.add(String.valueOf(category.size()), GsonUtil.template(
                 "printincategory",
                 "minecraft:chest",
                 "print",

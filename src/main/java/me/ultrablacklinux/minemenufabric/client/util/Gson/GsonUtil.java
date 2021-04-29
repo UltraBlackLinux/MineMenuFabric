@@ -21,7 +21,7 @@ public class GsonUtil {
         if (j.size() < 5) {
             int togo = 5-j.size();
             for (int i = 0; i < togo; i++) {
-                j.add(String.valueOf(j.size()+1), GsonUtil.empty());
+                j.add(String.valueOf(j.size()), GsonUtil.empty());
             }
         }
         return j;

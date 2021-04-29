@@ -17,20 +17,21 @@ import org.lwjgl.opengl.GL11;
 import java.util.Map;
 
 public class MineMenuSelectScreen extends Screen {
-    public static JsonObject jsonItems = new JsonObject();
-    int circleEntries = jsonItems.size(); //at least 5!
+    public static JsonObject jsonItems;
+    int circleEntries; //at least 5!
     int outerRadius;
     int innerRadius;
 
 
     public MineMenuSelectScreen(JsonObject menuData) {
         super(new TranslatableText("minemenu.menu.title"));
+        jsonItems = null;
         jsonItems = menuData;
         //sortItems();
 
+        circleEntries = jsonItems.size();
         outerRadius = 15 * circleEntries;
         innerRadius = 5 * circleEntries;
-
     }
 
     @Override
@@ -38,27 +39,7 @@ public class MineMenuSelectScreen extends Screen {
         this.renderGui(matrices, mouseX, mouseY);
     }
 
-    public static void sortItems() {
-        JsonObject out = new JsonObject();
-        int index = 0;
-        while(out.size() <= jsonItems.size()) {
-            for(Map.Entry<String, JsonElement> entry : jsonItems.entrySet()) {
-                int compare = Integer.parseInt(entry.getKey());
-                if (compare == index) {
-                    out.add(entry.getKey(), entry.getValue());
-                    index++;
-                }
-            }
-        }
-        jsonItems = out;
-    }
-
-
     private void renderGui(MatrixStack matrixStack, int mouseX, int mouseY) {
-        int circleEntries = jsonItems.size();
-
-        //int circleEntries = PingType.values().length - 1;
-
         int centerX = this.client.getWindow().getScaledWidth() / 2;
         int centerY = this.client.getWindow().getScaledHeight() / 2;
         this.client.textRenderer.draw(matrixStack, this.title,
@@ -95,26 +76,6 @@ public class MineMenuSelectScreen extends Screen {
 
             drawX += (outerPointX + innerPointX) / 2;
             drawY -= (outerPointY + innerPointY) / 2;
-
-            /*
-            float min = -32 / 2.0F;
-            float max = 32 / 2.0F;
-
-            matrixStack.push();
-            RenderSystem.enableBlend();
-
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBuffer();
-            //MinecraftClient.getInstance().getTextureManager().bindTexture(PingHandler.TEXTURE);
-            // Button Icon
-            bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
-            bufferBuilder.vertex(drawX + min, drawY + min, 0).texture(type.getMinU(),
-                    type.getMinV()).color(255, 255, 255, 255).next();
-
-            tessellator.draw();
-            RenderSystem.disableBlend();
-            matrixStack.pop();
-             */
 
             //0x00000000
             //0xOORRGGBB
@@ -174,7 +135,6 @@ public class MineMenuSelectScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        boolean isInCategory = true;
         int centerX = this.client.getWindow().getScaledWidth() / 2;
         int centerY = this.client.getWindow().getScaledHeight() / 2;
         if (!AngleHelper.isInsideCircle(mouseX, mouseY, centerX, centerY, innerRadius)
@@ -191,17 +151,14 @@ public class MineMenuSelectScreen extends Screen {
 
                 boolean mouseIn = AngleHelper.isAngleBetween(mouseAngle, currentAngle, nextAngle);
                 if (mouseIn) {
-                    //action - do something with the circleEntry
-
                     switch(value.get("type").getAsString()) {
                         case "print":
-                            isInCategory = false;
                             client.player.sendChatMessage(
                                     value.get("data").getAsJsonObject().get("message").getAsString());
                             break;
 
                         case "category":
-                            isInCategory = true;
+                            client.openScreen(null);
                             client.openScreen(new MineMenuSelectScreen(value.get("data").getAsJsonObject()));
                             break;
                     }
@@ -252,3 +209,42 @@ public class MineMenuSelectScreen extends Screen {
         matrixStack.pop();
     }
 }
+
+
+
+
+    /*public void sortItems() {
+        JsonObject out = new JsonObject();
+        int index = 0;
+        while(out.size() <= jsonItems.size()) {
+            for(Map.Entry<String, JsonElement> entry : jsonItems.entrySet()) {
+                int compare = Integer.parseInt(entry.getKey());
+                if (compare == index) {
+                    out.add(entry.getKey(), entry.getValue());
+                    index++;
+                }
+            }
+        }
+        jsonItems = out;
+    }*/
+
+
+            /*
+            float min = -32 / 2.0F;
+            float max = 32 / 2.0F;
+
+            matrixStack.push();
+            RenderSystem.enableBlend();
+
+            Tessellator tessellator = Tessellator.getInstance();
+            BufferBuilder bufferBuilder = tessellator.getBuffer();
+            //MinecraftClient.getInstance().getTextureManager().bindTexture(PingHandler.TEXTURE);
+            // Button Icon
+            bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
+            bufferBuilder.vertex(drawX + min, drawY + min, 0).texture(type.getMinU(),
+                    type.getMinV()).color(255, 255, 255, 255).next();
+
+            tessellator.draw();
+            RenderSystem.disableBlend();
+            matrixStack.pop();
+             */
