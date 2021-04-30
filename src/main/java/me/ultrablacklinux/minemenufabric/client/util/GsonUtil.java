@@ -1,7 +1,11 @@
-package me.ultrablacklinux.minemenufabric.client.util.Gson;
+package me.ultrablacklinux.minemenufabric.client.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient;
+import me.ultrablacklinux.minemenufabric.client.screen.MineMenuSelectScreen;
+
+import java.util.ArrayList;
 
 public class GsonUtil {
     public static JsonObject template(String name, String icon, String type, JsonObject data) {
@@ -14,16 +18,22 @@ public class GsonUtil {
     }
 
     public static JsonObject empty() {
-        return template("", "empty", "", new JsonObject());
+        return template("", "", "empty", new JsonObject());
     }
 
     public static JsonObject fixEntryAmount(JsonObject j) {
         if (j.size() < 5) {
-            int togo = 5-j.size();
-            for (int i = 0; i < togo; i++) {
+            for (int i = j.size(); i < 5; i++) {
                 j.add(String.valueOf(j.size()), GsonUtil.empty());
             }
         }
         return j;
+    }
+
+    public JsonObject findPath(ArrayList<String> path) {
+        JsonObject out;
+        for (int i = 0; i < path.size(); i++) {
+            out = MineMenuFabricClient.getInstance().j.get(path.get(1)).getAsJsonObject();
+        }
     }
 }

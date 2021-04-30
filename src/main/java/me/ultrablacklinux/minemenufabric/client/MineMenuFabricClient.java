@@ -3,7 +3,8 @@ package me.ultrablacklinux.minemenufabric.client;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.ultrablacklinux.minemenufabric.client.screen.MineMenuSelectScreen;
-import me.ultrablacklinux.minemenufabric.client.util.Gson.GsonUtil;
+import me.ultrablacklinux.minemenufabric.client.screen.TypeCycle;
+import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -11,12 +12,17 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.ArrayList;
 
 @Environment(EnvType.CLIENT)
 public class MineMenuFabricClient implements ClientModInitializer {
     MineMenuSelectScreen mineMenuSelectScreen;
     public static KeyBinding keyBinding;
+    public JsonObject j;
+    TypeCycle typeCycle;
     @Override
     public void onInitializeClient() {
         keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
@@ -30,21 +36,23 @@ public class MineMenuFabricClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (keyBinding.wasPressed()) {
                 if (!(client.currentScreen instanceof MineMenuSelectScreen)) {
-                    client.openScreen(new MineMenuSelectScreen(thing()));
+                    testData();
+                    client.openScreen(new MineMenuSelectScreen(j,
+                            new TranslatableText("minemenu.default.title").getString(), new ArrayList<>()));
                 }
             }
 
         });
     }
 
-    private JsonObject thing() {
+    private void testData() {
         JsonObject j = new JsonObject();
 
         JsonObject print1 = new JsonObject();
         print1.add("message", new JsonPrimitive("test123"));
         j.add(String.valueOf(j.size()), GsonUtil.template(
                 "print1",
-                "minecraft:cookie",
+                "minecraft:red_bed",
                 "print",
                 print1
         ));
@@ -75,6 +83,10 @@ public class MineMenuFabricClient implements ClientModInitializer {
                 category));
 
         GsonUtil.fixEntryAmount(j);
-        return j;
+        this.j = j;
+    }
+
+    public static MineMenuFabricClient getInstance() {
+        return this;
     }
 }

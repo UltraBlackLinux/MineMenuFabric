@@ -11,23 +11,31 @@ import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import org.lwjgl.opengl.GL11;
-
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 public class MineMenuSelectScreen extends Screen {
-    public static JsonObject jsonItems;
+    static JsonObject jsonItems;
     int circleEntries; //at least 5!
     int outerRadius;
     int innerRadius;
 
+    //ArrayList<String> dataPath;
 
-    public MineMenuSelectScreen(JsonObject menuData) {
-        super(new TranslatableText("minemenu.menu.title"));
+
+    public MineMenuSelectScreen(JsonObject menuData, String menuTitle, ArrayList<String> dataPath) {
+        super(Text.of(menuTitle));
         jsonItems = null;
         jsonItems = menuData;
-        //sortItems();
+        //TODO sort?
+
+        //this.dataPath = dataPath;
 
         circleEntries = jsonItems.size();
         outerRadius = 15 * circleEntries;
@@ -63,8 +71,8 @@ public class MineMenuSelectScreen extends Screen {
                     && AngleHelper.isInsideCircle(mouseX, mouseY, centerX, centerY,  outerRadius)
                     && mouseIn;
 
-            double drawX = centerX;
-            double drawY = centerY;
+            int drawX = centerX-8;
+            int drawY = centerY-8;
 
             double sin = Math.sin(Math.toRadians(currentAngle + degrees * 0.5D));
             double cos = Math.cos(Math.toRadians(currentAngle + degrees * 0.5D));
@@ -76,6 +84,13 @@ public class MineMenuSelectScreen extends Screen {
 
             drawX += (outerPointX + innerPointX) / 2;
             drawY -= (outerPointY + innerPointY) / 2;
+
+
+            ItemStack icon = Registry.ITEM.get(new Identifier(value.get("icon").getAsString())).getDefaultStack();
+
+            client.getItemRenderer().renderInGui(icon, drawX, drawY);
+
+
 
             //0x00000000
             //0xOORRGGBB
@@ -149,18 +164,25 @@ public class MineMenuSelectScreen extends Screen {
                 int nextAngle = currentAngle + degrees;
                 nextAngle = (int) AngleHelper.correctAngle(nextAngle);
 
+
                 boolean mouseIn = AngleHelper.isAngleBetween(mouseAngle, currentAngle, nextAngle);
                 if (mouseIn) {
-                    switch(value.get("type").getAsString()) {
-                        case "print":
-                            client.player.sendChatMessage(
-                                    value.get("data").getAsJsonObject().get("message").getAsString());
-                            break;
+                    if (button == 0) {
+                        switch (value.get("type").getAsString()) {
+                            case "print":
+                                client.player.sendChatMessage(
+                                        value.get("data").getAsJsonObject().get("message").getAsString());
+                                this.client.openScreen(null);
+                                break;
 
-                        case "category":
-                            client.openScreen(null);
-                            client.openScreen(new MineMenuSelectScreen(value.get("data").getAsJsonObject()));
-                            break;
+                            case "category":
+                                client.openScreen(new MineMenuSelectScreen(entry, value.get("name").getAsString()));
+                                break;
+                        }
+                    }
+                    else if (button == 1) {
+                        client.openScreen(new MineMenuSettingsScreen(
+                                this, this::doStuff, new ArrayList<>(Collections.singletonList(""))));
                     }
                 }
 
@@ -208,43 +230,9 @@ public class MineMenuSelectScreen extends Screen {
         RenderSystem.disableBlend();
         matrixStack.pop();
     }
+
+
+    private void doStuff(JsonObject inp) {
+        System.out.println(inp);
+    }
 }
-
-
-
-
-    /*public void sortItems() {
-        JsonObject out = new JsonObject();
-        int index = 0;
-        while(out.size() <= jsonItems.size()) {
-            for(Map.Entry<String, JsonElement> entry : jsonItems.entrySet()) {
-                int compare = Integer.parseInt(entry.getKey());
-                if (compare == index) {
-                    out.add(entry.getKey(), entry.getValue());
-                    index++;
-                }
-            }
-        }
-        jsonItems = out;
-    }*/
-
-
-            /*
-            float min = -32 / 2.0F;
-            float max = 32 / 2.0F;
-
-            matrixStack.push();
-            RenderSystem.enableBlend();
-
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBuffer();
-            //MinecraftClient.getInstance().getTextureManager().bindTexture(PingHandler.TEXTURE);
-            // Button Icon
-            bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_TEXTURE);
-            bufferBuilder.vertex(drawX + min, drawY + min, 0).texture(type.getMinU(),
-                    type.getMinV()).color(255, 255, 255, 255).next();
-
-            tessellator.draw();
-            RenderSystem.disableBlend();
-            matrixStack.pop();
-             */
