@@ -29,11 +29,4 @@ public class GsonUtil {
         }
         return j;
     }
-
-    public JsonObject findPath(ArrayList<String> path) {
-        JsonObject out;
-        for (int i = 0; i < path.size(); i++) {
-            out = MineMenuFabricClient.getInstance().j.get(path.get(1)).getAsJsonObject();
-        }
-    }
 }

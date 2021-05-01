@@ -17,7 +17,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Map;
 
 public class MineMenuSelectScreen extends Screen {
@@ -26,7 +25,7 @@ public class MineMenuSelectScreen extends Screen {
     int outerRadius;
     int innerRadius;
 
-    //ArrayList<String> dataPath;
+    ArrayList<String> dataPath;
 
 
     public MineMenuSelectScreen(JsonObject menuData, String menuTitle, ArrayList<String> dataPath) {
@@ -35,7 +34,7 @@ public class MineMenuSelectScreen extends Screen {
         jsonItems = menuData;
         //TODO sort?
 
-        //this.dataPath = dataPath;
+        this.dataPath = dataPath;
 
         circleEntries = jsonItems.size();
         outerRadius = 15 * circleEntries;
@@ -165,9 +164,11 @@ public class MineMenuSelectScreen extends Screen {
                 nextAngle = (int) AngleHelper.correctAngle(nextAngle);
 
 
+
                 boolean mouseIn = AngleHelper.isAngleBetween(mouseAngle, currentAngle, nextAngle);
                 if (mouseIn) {
                     if (button == 0) {
+                        dataPath.add(entry.getKey());
                         switch (value.get("type").getAsString()) {
                             case "print":
                                 client.player.sendChatMessage(
@@ -176,13 +177,15 @@ public class MineMenuSelectScreen extends Screen {
                                 break;
 
                             case "category":
-                                client.openScreen(new MineMenuSelectScreen(entry, value.get("name").getAsString()));
+                                dataPath.add("data");
+                                client.openScreen(new MineMenuSelectScreen(value.get("data").getAsJsonObject(),
+                                        value.get("name").getAsString(), dataPath));
                                 break;
                         }
                     }
                     else if (button == 1) {
-                        client.openScreen(new MineMenuSettingsScreen(
-                                this, this::doStuff, new ArrayList<>(Collections.singletonList(""))));
+                        dataPath.add(entry.getKey());
+                        client.openScreen(new MineMenuSettingsScreen(this, dataPath));
                     }
                 }
 
@@ -229,10 +232,5 @@ public class MineMenuSelectScreen extends Screen {
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
         matrixStack.pop();
-    }
-
-
-    private void doStuff(JsonObject inp) {
-        System.out.println(inp);
     }
 }

@@ -21,7 +21,8 @@ import java.util.ArrayList;
 public class MineMenuFabricClient implements ClientModInitializer {
     MineMenuSelectScreen mineMenuSelectScreen;
     public static KeyBinding keyBinding;
-    public JsonObject j;
+    public static JsonObject minemenuData;
+    public static ArrayList<String> datapath;
     TypeCycle typeCycle;
     @Override
     public void onInitializeClient() {
@@ -37,7 +38,7 @@ public class MineMenuFabricClient implements ClientModInitializer {
             if (keyBinding.wasPressed()) {
                 if (!(client.currentScreen instanceof MineMenuSelectScreen)) {
                     testData();
-                    client.openScreen(new MineMenuSelectScreen(j,
+                    client.openScreen(new MineMenuSelectScreen(minemenuData,
                             new TranslatableText("minemenu.default.title").getString(), new ArrayList<>()));
                 }
             }
@@ -83,10 +84,6 @@ public class MineMenuFabricClient implements ClientModInitializer {
                 category));
 
         GsonUtil.fixEntryAmount(j);
-        this.j = j;
-    }
-
-    public static MineMenuFabricClient getInstance() {
-        return this;
+        this.minemenuData = j;
     }
 }
