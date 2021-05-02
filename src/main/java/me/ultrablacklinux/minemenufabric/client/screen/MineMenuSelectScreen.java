@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient;
 import me.ultrablacklinux.minemenufabric.client.util.AngleHelper;
+import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -19,23 +20,21 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
+
 public class MineMenuSelectScreen extends Screen {
     static JsonObject jsonItems;
     int circleEntries; //at least 5!
     int outerRadius;
     int innerRadius;
 
-    ArrayList<String> dataPath;
-
-
-    public MineMenuSelectScreen(JsonObject menuData, String menuTitle, ArrayList<String> dataPath) {
+    public MineMenuSelectScreen(JsonObject menuData, String menuTitle, Screen parent) {
         super(Text.of(menuTitle));
-        jsonItems = null;
+
         jsonItems = menuData;
-        //TODO sort?
-
-        this.dataPath = dataPath;
-
+        if (parent == null) {
+            datapath = new ArrayList<>();
+        }
         circleEntries = jsonItems.size();
         outerRadius = 15 * circleEntries;
         innerRadius = 5 * circleEntries;
@@ -80,20 +79,14 @@ public class MineMenuSelectScreen extends Screen {
             double outerPointY = (isHovered ? outerRadius + 5 : outerRadius) * cos;
             double innerPointX = innerRadius * sin;
             double innerPointY = innerRadius * cos;
-
             drawX += (outerPointX + innerPointX) / 2;
             drawY -= (outerPointY + innerPointY) / 2;
 
-
             ItemStack icon = Registry.ITEM.get(new Identifier(value.get("icon").getAsString())).getDefaultStack();
-
             client.getItemRenderer().renderInGui(icon, drawX, drawY);
-
-
 
             //0x00000000
             //0xOORRGGBB
-
             if (isHovered) {
                 this.drawDoughnutSegment(matrixStack,
                         currentAngle, currentAngle + degrees / 2, centerX, centerY,
@@ -131,7 +124,7 @@ public class MineMenuSelectScreen extends Screen {
     @Override
     public void tick() {
         if (true){ //keybinding mode - hold or pressed
-            if (MineMenuFabricClient.keyBinding.wasPressed()) { //check for keybinding pressed
+            if (keyBinding.wasPressed()) { //check for keybinding pressed
                 final double mouseX = this.client.mouse.getX() * ((double) this.client.getWindow().getScaledWidth() /
                         this.client.getWindow().getWidth());
                 final double mouseY = this.client.mouse.getY() * ((double) this.client.getWindow().getScaledHeight() /
@@ -141,11 +134,6 @@ public class MineMenuSelectScreen extends Screen {
             }
         }
     }
-
-
-    /**
-     * @variable button Index of item in list
-     */
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -162,14 +150,15 @@ public class MineMenuSelectScreen extends Screen {
                 JsonObject value = entry.getValue().getAsJsonObject();
                 int nextAngle = currentAngle + degrees;
                 nextAngle = (int) AngleHelper.correctAngle(nextAngle);
-
-
-
                 boolean mouseIn = AngleHelper.isAngleBetween(mouseAngle, currentAngle, nextAngle);
                 if (mouseIn) {
+                    datapath.add(entry.getKey());
                     if (button == 0) {
-                        dataPath.add(entry.getKey());
                         switch (value.get("type").getAsString()) {
+                            case "empty":
+                                client.openScreen(new MineMenuSettingsScreen(this));
+                                break;
+
                             case "print":
                                 client.player.sendChatMessage(
                                         value.get("data").getAsJsonObject().get("message").getAsString());
@@ -177,15 +166,16 @@ public class MineMenuSelectScreen extends Screen {
                                 break;
 
                             case "category":
-                                dataPath.add("data");
+                                datapath.add("data");
+                                GsonUtil.saveJson(GsonUtil.fixEntryAmount(value.get("data").getAsJsonObject()));
+
                                 client.openScreen(new MineMenuSelectScreen(value.get("data").getAsJsonObject(),
-                                        value.get("name").getAsString(), dataPath));
+                                        value.get("name").getAsString(), this));
                                 break;
                         }
                     }
                     else if (button == 1) {
-                        dataPath.add(entry.getKey());
-                        client.openScreen(new MineMenuSettingsScreen(this, dataPath));
+                        client.openScreen(new MineMenuSettingsScreen(this));
                     }
                 }
 

@@ -26,6 +26,8 @@ public class MineMenuFabricClient implements ClientModInitializer {
     TypeCycle typeCycle;
     @Override
     public void onInitializeClient() {
+        //testData();
+        minemenuData = GsonUtil.fixEntryAmount(new JsonObject());
         keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.examplemod.spook", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R,
                 "category.examplemod.test"));
@@ -37,9 +39,9 @@ public class MineMenuFabricClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (keyBinding.wasPressed()) {
                 if (!(client.currentScreen instanceof MineMenuSelectScreen)) {
-                    testData();
+                    System.out.println(minemenuData);
                     client.openScreen(new MineMenuSelectScreen(minemenuData,
-                            new TranslatableText("minemenu.default.title").getString(), new ArrayList<>()));
+                            new TranslatableText("minemenu.default.title").getString(), null));
                 }
             }
 
@@ -84,6 +86,6 @@ public class MineMenuFabricClient implements ClientModInitializer {
                 category));
 
         GsonUtil.fixEntryAmount(j);
-        this.minemenuData = j;
+        minemenuData = j;
     }
 }
