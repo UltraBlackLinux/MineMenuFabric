@@ -8,15 +8,18 @@
     "UltraBlackLinux"
   ],
   "contact": {
-    "website": "dgfg",
-    "repo": "dfjj"
+    "website": "https://github.com/UltraBlackLinux/MineMenuFabric",
+    "repo": "https://github.com/UltraBlackLinux/MineMenuFabric/issues"
   },
   "license": "MIT",
-  "icon": "assets/MineMenuFabric/icon.png",
+  "icon": "assets/minemenufabric/icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [
       "me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient"
+    ],
+    "modmenu": [
+      "me.ultrablacklinux.minemenufabric.client.config.modmenu.ModMenuEntry"
     ]
   },
   "mixins": [
@@ -25,7 +28,9 @@
   "depends": {
     "fabricloader": ">=0.11.3",
     "fabric": "*",
-    "minecraft": "*"
+    "minecraft": "*",
+    "modmenu": ">=1.16.7",
+    "cloth-config2": ">=4.10.6"
   },
   "custom": {
     "modmenu": [

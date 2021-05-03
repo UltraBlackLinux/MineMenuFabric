@@ -3,9 +3,11 @@ package me.ultrablacklinux.minemenufabric.client.screen;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient;
+import me.shedaniel.math.Color;
+import me.ultrablacklinux.minemenufabric.client.config.Config;
 import me.ultrablacklinux.minemenufabric.client.util.AngleHelper;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
+import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -24,24 +26,21 @@ import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
 
 
 public class MineMenuSelectScreen extends Screen {
-    static JsonObject jsonItems;
-    int circleEntries; //at least 5!
-    int outerRadius;
-    int innerRadius;
-    //ArrayList<String> datapath;
+    private JsonObject jsonItems; //MUST NEVER BE STATIC - WILL BE NULL OTHERWISE
+    private int circleEntries; //at least 5!
+    private int outerRadius;
+    private int innerRadius;
 
-    public MineMenuSelectScreen(JsonObject menuData, String menuTitle, Screen parent) { //ArrayList<String> datapath
+    public MineMenuSelectScreen(JsonObject menuData, String menuTitle, Screen parent) {
         super(Text.of(menuTitle));
-        jsonItems = menuData;
-
-        //MineMenuFabricClient.datapath = datapath;
+        this.jsonItems = menuData;
 
         if (parent == null) datapath = new ArrayList<>();
-        //this.datapath = datapath;
 
-        circleEntries = jsonItems.size();
-        outerRadius = 15 * circleEntries;
-        innerRadius = 5 * circleEntries;
+
+        circleEntries = Config.get().minemenuFabric.menuEntries;
+        outerRadius = Config.get().minemenuFabric.outerRadius;
+        innerRadius = Config.get().minemenuFabric.innerRadius;
     }
 
     @Override
@@ -61,7 +60,10 @@ public class MineMenuSelectScreen extends Screen {
         int currentAngle = 360 - degrees / 2;
         int mouseAngle = (int) AngleHelper.getMouseAngle();
 
+        int i = 0;
         for (Map.Entry<String, JsonElement> entry : jsonItems.entrySet()) {
+            if (i > Config.get().minemenuFabric.menuEntries) break;
+            i++;
             JsonObject value = entry.getValue().getAsJsonObject();
 
             int nextAngle = currentAngle + degrees;
@@ -89,17 +91,18 @@ public class MineMenuSelectScreen extends Screen {
             ItemStack icon = Registry.ITEM.get(new Identifier(value.get("icon").getAsString())).getDefaultStack();
             client.getItemRenderer().renderInGui(icon, drawX, drawY);
 
-            //0x00000000
-            //0xOORRGGBB
+            int primaryColor = RandomUtil.getColor(Config.get().minemenuFabric.primaryColor).getColor();
+            int secondaryColor = RandomUtil.getColor(Config.get().minemenuFabric.secondaryColor).getColor();
+
             if (isHovered) {
                 this.drawDoughnutSegment(matrixStack,
                         currentAngle, currentAngle + degrees / 2, centerX, centerY,
                         outerRadius + 5, innerRadius,
-                        0xCCA00000); //TODO CUSTOM COLOR
+                        primaryColor);
                 this.drawDoughnutSegment(matrixStack,
                         currentAngle + degrees / 2, currentAngle + degrees, centerX, centerY,
                         outerRadius + 5, innerRadius,
-                        0xCCA00000);
+                        primaryColor);
 
                 this.client.textRenderer.draw(matrixStack,
                         value.get("name").getAsString(),
@@ -111,13 +114,13 @@ public class MineMenuSelectScreen extends Screen {
                         currentAngle,
                         currentAngle + degrees / 2, centerX, centerY,
                         outerRadius, innerRadius,
-                        0xD0212121);
+                        secondaryColor);
                 this.drawDoughnutSegment(matrixStack,
                         currentAngle + degrees / 2,
                         currentAngle + degrees,
                         centerX, centerY,
                         outerRadius, innerRadius,
-                        0xD0212121);
+                        secondaryColor);
             }
 
             currentAngle += degrees;
@@ -127,7 +130,6 @@ public class MineMenuSelectScreen extends Screen {
 
     @Override
     public void tick() {
-        //MineMenuFabricClient.datapath = datapath;
         if (true){ //keybinding mode - hold or pressed
             if (keyBinding.wasPressed()) { //check for keybinding pressed
                 final double mouseX = this.client.mouse.getX() * ((double) this.client.getWindow().getScaledWidth() /
@@ -172,9 +174,7 @@ public class MineMenuSelectScreen extends Screen {
 
                             case "category":
                                 datapath.add("data");
-                                System.out.println(datapath);
                                 GsonUtil.saveJson(GsonUtil.fixEntryAmount(value.get("data").getAsJsonObject()));
-                                System.out.println(datapath);
 
                                 client.openScreen(new MineMenuSelectScreen(value.get("data").getAsJsonObject(),
                                         value.get("name").getAsString(), this));

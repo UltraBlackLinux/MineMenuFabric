@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient;
+import me.ultrablacklinux.minemenufabric.client.config.Config;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -24,10 +25,8 @@ public class GsonUtil {
     }
 
     public static JsonObject fixEntryAmount(JsonObject j) {
-        if (j.size() < 5) {
-            for (int i = j.size(); i < 5; i++) {
-                j.add(String.valueOf(j.size()), GsonUtil.empty());
-            }
+        for (int i = j.size(); i < Config.get().minemenuFabric.menuEntries; i++) {
+            j.add(String.valueOf(j.size()), GsonUtil.empty());
         }
         return j;
     }

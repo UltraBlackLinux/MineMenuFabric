@@ -3,7 +3,9 @@ package me.ultrablacklinux.minemenufabric.client.screen;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import me.shedaniel.autoconfig.AutoConfig;
 import me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient;
+import me.ultrablacklinux.minemenufabric.client.config.Config;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -45,17 +47,12 @@ public class MineMenuSettingsScreen extends Screen {
         this.itemName.tick();
     }
 
-    protected void init() {//going back and forth breaks it: [0] -> [0,4]
+    protected void init() {
         JsonObject data = minemenuData;
-
-        System.out.println("Datapath:" + datapath);
 
         for (String s : datapath) {
             data = data.get(s).getAsJsonObject();
         }
-
-
-        System.out.println("Looking at:" + data);
 
         typeCycle = TypeCycle.valueOf(data.get("type").getAsString().toUpperCase());
 
@@ -128,11 +125,11 @@ public class MineMenuSettingsScreen extends Screen {
         this.renderBackground(matrices);
         drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 17, 16777215);
         drawTextWithShadow(matrices, this.textRenderer, new LiteralText("Name:"),
-                this.width / 2 - 100, 30, 10526880);
+                this.width / 2 - 100, 30, 0xFFa0a0a0);
         drawTextWithShadow(matrices, this.textRenderer, new LiteralText("Icon:"),
-                this.width / 2 - 100, 70, 10526880);
+                this.width / 2 - 100, 70, 0xFFa0a0a0);
         drawTextWithShadow(matrices, this.textRenderer, new LiteralText("Text:"),
-                this.width / 2 - 100, 110, 10526880);
+                this.width / 2 - 100, 110, 0xFFa0a0a0);
         this.itemName.render(matrices, mouseX, mouseY, delta);
         this.itemIcon.render(matrices, mouseX, mouseY, delta);
         this.itemData.render(matrices, mouseX, mouseY, delta);
@@ -165,7 +162,7 @@ public class MineMenuSettingsScreen extends Screen {
         switch (typeCycle) {
             case EMPTY:
                 name = "";
-                icon = "minecraft:air";
+                icon = Config.get().minemenuFabric.emptyItemIcon;
                 break;
             case PRINT:
                 subData.add("message", new JsonPrimitive(data));
@@ -176,7 +173,7 @@ public class MineMenuSettingsScreen extends Screen {
         }
 
         GsonUtil.saveJson(GsonUtil.template(name, icon, typeCycle.name().toLowerCase(), subData));
+        Config.get().minemenuFabric.minemenuData = minemenuData;
+        AutoConfig.getConfigHolder(Config.class).save();
     }
 }
-
-//TODO kill translatable text lol

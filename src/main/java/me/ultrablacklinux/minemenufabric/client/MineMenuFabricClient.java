@@ -1,9 +1,8 @@
 package me.ultrablacklinux.minemenufabric.client;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import me.ultrablacklinux.minemenufabric.client.config.Config;
 import me.ultrablacklinux.minemenufabric.client.screen.MineMenuSelectScreen;
-import me.ultrablacklinux.minemenufabric.client.screen.TypeCycle;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -26,11 +25,11 @@ public class MineMenuFabricClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        //datapath = new ArrayList<>();
-        minemenuData = GsonUtil.fixEntryAmount(new JsonObject());
+        Config.init();
+        minemenuData = Config.get().minemenuFabric.minemenuData;
         keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.examplemod.spook", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R,
-                "category.examplemod.test"));
+                "minemenu.key.open", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R,
+                "minemenu.category"));
 
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
             if (mineMenuSelectScreen != null) this.mineMenuSelectScreen.tick();
@@ -39,7 +38,7 @@ public class MineMenuFabricClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (keyBinding.wasPressed()) {
                 if (!(client.currentScreen instanceof MineMenuSelectScreen)) {
-                    System.out.println(minemenuData);
+                    minemenuData = GsonUtil.fixEntryAmount(minemenuData);
                     client.openScreen(new MineMenuSelectScreen(minemenuData,
                             new TranslatableText("minemenu.default.title").getString(), null));
                 }
