@@ -22,19 +22,23 @@ import java.util.Map;
 
 import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
 
+
 public class MineMenuSelectScreen extends Screen {
     static JsonObject jsonItems;
     int circleEntries; //at least 5!
     int outerRadius;
     int innerRadius;
+    //ArrayList<String> datapath;
 
-    public MineMenuSelectScreen(JsonObject menuData, String menuTitle, Screen parent) {
+    public MineMenuSelectScreen(JsonObject menuData, String menuTitle, Screen parent) { //ArrayList<String> datapath
         super(Text.of(menuTitle));
-
         jsonItems = menuData;
-        if (parent == null) {
-            datapath = new ArrayList<>();
-        }
+
+        //MineMenuFabricClient.datapath = datapath;
+
+        if (parent == null) datapath = new ArrayList<>();
+        //this.datapath = datapath;
+
         circleEntries = jsonItems.size();
         outerRadius = 15 * circleEntries;
         innerRadius = 5 * circleEntries;
@@ -123,6 +127,7 @@ public class MineMenuSelectScreen extends Screen {
 
     @Override
     public void tick() {
+        //MineMenuFabricClient.datapath = datapath;
         if (true){ //keybinding mode - hold or pressed
             if (keyBinding.wasPressed()) { //check for keybinding pressed
                 final double mouseX = this.client.mouse.getX() * ((double) this.client.getWindow().getScaledWidth() /
@@ -156,7 +161,7 @@ public class MineMenuSelectScreen extends Screen {
                     if (button == 0) {
                         switch (value.get("type").getAsString()) {
                             case "empty":
-                                client.openScreen(new MineMenuSettingsScreen(this));
+                                client.openScreen(new MineMenuSettingsScreen(this, datapath));
                                 break;
 
                             case "print":
@@ -167,7 +172,9 @@ public class MineMenuSelectScreen extends Screen {
 
                             case "category":
                                 datapath.add("data");
+                                System.out.println(datapath);
                                 GsonUtil.saveJson(GsonUtil.fixEntryAmount(value.get("data").getAsJsonObject()));
+                                System.out.println(datapath);
 
                                 client.openScreen(new MineMenuSelectScreen(value.get("data").getAsJsonObject(),
                                         value.get("name").getAsString(), this));
@@ -175,7 +182,7 @@ public class MineMenuSelectScreen extends Screen {
                         }
                     }
                     else if (button == 1) {
-                        client.openScreen(new MineMenuSettingsScreen(this));
+                        client.openScreen(new MineMenuSettingsScreen(this, datapath));
                     }
                 }
 
@@ -224,3 +231,6 @@ public class MineMenuSelectScreen extends Screen {
         matrixStack.pop();
     }
 }
+
+
+//TODO TRANSLATABLE TEXT

@@ -1,7 +1,6 @@
 package me.ultrablacklinux.minemenufabric.client.screen;
 
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient;
@@ -21,7 +20,6 @@ import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
 
@@ -35,8 +33,10 @@ public class MineMenuSettingsScreen extends Screen {
 
     private final Screen parent;
 
-    public MineMenuSettingsScreen(Screen parent) {
+    public MineMenuSettingsScreen(Screen parent, ArrayList<String> datapath) {
         super(new TranslatableText("minemenu.settings.title"));
+
+        MineMenuFabricClient.datapath = datapath; //TODO fuck this
         this.parent = parent;
     }
 
@@ -48,11 +48,13 @@ public class MineMenuSettingsScreen extends Screen {
     protected void init() {//going back and forth breaks it: [0] -> [0,4]
         JsonObject data = minemenuData;
 
+        System.out.println("Datapath:" + datapath);
+
         for (String s : datapath) {
             data = data.get(s).getAsJsonObject();
         }
 
-        System.out.println("Datapath:" + datapath);
+
         System.out.println("Looking at:" + data);
 
         typeCycle = TypeCycle.valueOf(data.get("type").getAsString().toUpperCase());
@@ -148,7 +150,8 @@ public class MineMenuSettingsScreen extends Screen {
 
     private void close(boolean cancel) {
         if (!cancel) applySettings();
-        if (datapath.size() != 0) MineMenuFabricClient.datapath.remove(datapath.size()-1);
+        if (datapath.get(datapath.size()-1).equals("data")) for (int i = 0; i < 2; i++) datapath.remove(datapath.size()-1);
+        if (datapath.size() != 0) datapath.remove(datapath.size()-1);
         this.client.keyboard.setRepeatEvents(false);
         this.client.openScreen(this.parent);
     }
