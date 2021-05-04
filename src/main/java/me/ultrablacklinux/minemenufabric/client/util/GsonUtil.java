@@ -9,6 +9,7 @@ import me.ultrablacklinux.minemenufabric.client.config.Config;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 public class GsonUtil {
 
@@ -33,7 +34,8 @@ public class GsonUtil {
         }
         else if (j.size() > Config.get().minemenuFabric.menuEntries) {
             for (int i = j.size() - Config.get().minemenuFabric.menuEntries; i > 0; i--) {
-                ArrayList<String> a = new ArrayList<>(j.keySet());
+                ArrayList<String> a = new ArrayList<>();
+                j.entrySet().forEach(e -> a.add(e.getKey()));
                 Collections.reverse(a);
                 j.remove(a.get(0));
             }
@@ -46,6 +48,7 @@ public class GsonUtil {
      * definitely didn't take me like 3 hours to come up with
      * And even more due to a stupid bug
      */
+    @SuppressWarnings("unchecked")
     public static void saveJson(JsonObject jso) {
         ArrayList<String> localDatapath = (ArrayList<String>) MineMenuFabricClient.datapath.clone();
         if (localDatapath.size() == 1) {
