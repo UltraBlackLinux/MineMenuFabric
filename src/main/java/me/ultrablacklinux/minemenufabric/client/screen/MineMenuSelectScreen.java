@@ -3,7 +3,6 @@ package me.ultrablacklinux.minemenufabric.client.screen;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.shedaniel.math.Color;
 import me.ultrablacklinux.minemenufabric.client.config.Config;
 import me.ultrablacklinux.minemenufabric.client.util.AngleHelper;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
@@ -23,6 +22,11 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
+
+
+/**
+ * The actual menu rendering is by FlashyReese
+ */
 
 
 public class MineMenuSelectScreen extends Screen {
@@ -163,7 +167,7 @@ public class MineMenuSelectScreen extends Screen {
                     if (button == 0) {
                         switch (value.get("type").getAsString()) {
                             case "empty":
-                                client.openScreen(new MineMenuSettingsScreen(this, datapath));
+                                this.openConfigScreen();
                                 break;
 
                             case "print":
@@ -182,7 +186,7 @@ public class MineMenuSelectScreen extends Screen {
                         }
                     }
                     else if (button == 1) {
-                        client.openScreen(new MineMenuSettingsScreen(this, datapath));
+                        this.openConfigScreen();
                     }
                 }
 
@@ -194,6 +198,15 @@ public class MineMenuSelectScreen extends Screen {
             this.client.openScreen(null);
         }
         return false;
+    }
+
+    private void openConfigScreen() {
+        try {
+            client.openScreen(new MineMenuSettingsScreen(this, datapath));
+        } catch (NullPointerException e) {
+            client.openScreen(null);
+            client.player.sendMessage(Text.of("§l§c Corrupt config! Reset it via the config menu!"), false);
+        }
     }
 
     @Override

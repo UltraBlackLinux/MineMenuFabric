@@ -7,6 +7,7 @@ import me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient;
 import me.ultrablacklinux.minemenufabric.client.config.Config;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 public class GsonUtil {
@@ -25,8 +26,17 @@ public class GsonUtil {
     }
 
     public static JsonObject fixEntryAmount(JsonObject j) {
-        for (int i = j.size(); i < Config.get().minemenuFabric.menuEntries; i++) {
-            j.add(String.valueOf(j.size()), GsonUtil.empty());
+        if (j.size() < Config.get().minemenuFabric.menuEntries) {
+            for (int i = j.size(); i < Config.get().minemenuFabric.menuEntries; i++) {
+                j.add(String.valueOf(j.size()), GsonUtil.empty());
+            }
+        }
+        else if (j.size() > Config.get().minemenuFabric.menuEntries) {
+            for (int i = j.size() - Config.get().minemenuFabric.menuEntries; i > 0; i--) {
+                ArrayList<String> a = new ArrayList<>(j.keySet());
+                Collections.reverse(a);
+                j.remove(a.get(0));
+            }
         }
         return j;
     }

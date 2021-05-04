@@ -32,10 +32,10 @@ public class Config extends PartitioningSerializer.GlobalData {
 
         public int menuEntries = 5;
 
-        @ConfigEntry.Gui.Tooltip(count = 2)
+        @ConfigEntry.Gui.Tooltip
         public int outerRadius = 75;
 
-        @ConfigEntry.Gui.Tooltip(count = 2)
+        @ConfigEntry.Gui.Tooltip
         public int innerRadius = 25;
 
         @ConfigEntry.Gui.Tooltip
@@ -46,6 +46,9 @@ public class Config extends PartitioningSerializer.GlobalData {
 
         @ConfigEntry.Gui.Tooltip
         public String emptyItemIcon = "minecraft:air";
+
+        @ConfigEntry.Gui.Tooltip
+        public boolean resetConfig = false;
 
     }
 

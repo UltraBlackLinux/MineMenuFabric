@@ -1,6 +1,7 @@
 package me.ultrablacklinux.minemenufabric.client;
 
 import com.google.gson.JsonObject;
+import me.shedaniel.autoconfig.AutoConfig;
 import me.ultrablacklinux.minemenufabric.client.config.Config;
 import me.ultrablacklinux.minemenufabric.client.screen.MineMenuSelectScreen;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
@@ -32,6 +33,12 @@ public class MineMenuFabricClient implements ClientModInitializer {
                 "minemenu.category"));
 
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
+            if (Config.get().minemenuFabric.resetConfig) {
+                Config.get().minemenuFabric.resetConfig = false;
+                Config.get().minemenuFabric.minemenuData = new JsonObject();
+                minemenuData = new JsonObject();
+                AutoConfig.getConfigHolder(Config.class).save();
+            }
             if (mineMenuSelectScreen != null) this.mineMenuSelectScreen.tick();
         });
 

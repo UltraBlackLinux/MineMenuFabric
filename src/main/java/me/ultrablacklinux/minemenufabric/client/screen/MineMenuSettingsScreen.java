@@ -16,6 +16,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -50,9 +51,7 @@ public class MineMenuSettingsScreen extends Screen {
     protected void init() {
         JsonObject data = minemenuData;
 
-        for (String s : datapath) {
-            data = data.get(s).getAsJsonObject();
-        }
+        for (String s : datapath) data = data.get(s).getAsJsonObject();
 
         typeCycle = TypeCycle.valueOf(data.get("type").getAsString().toUpperCase());
 
