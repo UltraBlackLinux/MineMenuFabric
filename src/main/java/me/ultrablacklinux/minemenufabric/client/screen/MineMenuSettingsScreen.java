@@ -166,6 +166,9 @@ public class MineMenuSettingsScreen extends Screen {
             case PRINT:
                 subData.add("message", new JsonPrimitive(data));
                 break;
+            case LINK:
+                subData.add("url", new JsonPrimitive(data));
+                break;
             case CATEGORY:
                 subData = new JsonObject();
                 break;
