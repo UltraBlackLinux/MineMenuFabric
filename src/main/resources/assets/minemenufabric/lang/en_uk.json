@@ -1,0 +1,21 @@
+{
+
+  "minemenu.default.title": "MineMenu",
+  "minemenu.category": "MineMenu",
+  "minemenu.key.open": "Open MineMenu",
+  "minemenu.settings.title": "Configure Entry",
+  "text.autoconfig.MinemenuFabric.title": "Minemenu Config",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.menuEntries": "Menu Entries",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.outerRadius": "Outer Radius",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.outerRadius.@Tooltip": "Menu becomes invisible, if smaller than the Inner Radius",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.innerRadius": "Inner Radius",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.innerRadius.@Tooltip": "Menu becomes invisible, if larger than the Outer Radius",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.primaryColor": "Hover Color",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.primaryColor.@Tooltip": "Hex color - Supports \"#\", \"0x\" and more",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.secondaryColor": "Idle Color",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.secondaryColor.@Tooltip": "Hex color - Supports \"#\", \"0x\" and more",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon": "Empty Icon",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon.@Tooltip": "Icon for empty menu entries",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetConfig": "Reset the Config",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetConfig.@Tooltip": "The Config will reset, once you press done"
+}
