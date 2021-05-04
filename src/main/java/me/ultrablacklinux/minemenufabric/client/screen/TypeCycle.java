@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 public enum TypeCycle implements Nameable {
     PRINT,
     CATEGORY,
+    LINK,
     EMPTY;
 
     public TypeCycle next() {
