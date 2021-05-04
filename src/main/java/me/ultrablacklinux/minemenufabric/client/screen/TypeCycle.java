@@ -2,7 +2,6 @@ package me.ultrablacklinux.minemenufabric.client.screen;
 
 import net.minecraft.text.Text;
 import net.minecraft.util.Nameable;
-import org.jetbrains.annotations.NotNull;
 
 public enum TypeCycle implements Nameable {
     PRINT,

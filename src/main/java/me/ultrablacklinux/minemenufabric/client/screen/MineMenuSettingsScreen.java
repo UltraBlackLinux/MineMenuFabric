@@ -161,8 +161,8 @@ public class MineMenuSettingsScreen extends Screen {
         switch (typeCycle) {
             case EMPTY:
                 name = "";
-                icon = Config.get().minemenuFabric.emptyItemIcon;
-                break;
+                icon = "";
+                data = "";
             case PRINT:
                 subData.add("message", new JsonPrimitive(data));
                 break;

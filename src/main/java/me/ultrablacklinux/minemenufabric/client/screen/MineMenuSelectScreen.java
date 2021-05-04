@@ -64,10 +64,7 @@ public class MineMenuSelectScreen extends Screen {
         int currentAngle = 360 - degrees / 2;
         int mouseAngle = (int) AngleHelper.getMouseAngle();
 
-        int i = 0;
         for (Map.Entry<String, JsonElement> entry : jsonItems.entrySet()) {
-            if (i > Config.get().minemenuFabric.menuEntries) break;
-            i++;
             JsonObject value = entry.getValue().getAsJsonObject();
 
             int nextAngle = currentAngle + degrees;
@@ -92,7 +89,14 @@ public class MineMenuSelectScreen extends Screen {
             drawX += (outerPointX + innerPointX) / 2;
             drawY -= (outerPointY + innerPointY) / 2;
 
-            ItemStack icon = Registry.ITEM.get(new Identifier(value.get("icon").getAsString())).getDefaultStack();
+            ItemStack icon;
+            if (value.get("type").getAsString().equals("empty")) {
+                icon = Registry.ITEM.get(new Identifier(Config.get().minemenuFabric.emptyItemIcon)).getDefaultStack();
+            }
+            else {
+                icon = Registry.ITEM.get(new Identifier(value.get("icon").getAsString())).getDefaultStack();
+            }
+
             client.getItemRenderer().renderInGui(icon, drawX, drawY);
 
             int primaryColor = RandomUtil.getColor(Config.get().minemenuFabric.primaryColor).getColor();
@@ -244,6 +248,3 @@ public class MineMenuSelectScreen extends Screen {
         matrixStack.pop();
     }
 }
-
-
-//TODO TRANSLATABLE TEXT
