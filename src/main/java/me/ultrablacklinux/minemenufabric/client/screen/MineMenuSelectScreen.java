@@ -190,31 +190,31 @@ public class MineMenuSelectScreen extends Screen {
                 if (mouseIn) {
                     datapath.add(entry.getKey());
                     if (button == 0) {
-                        switch (value.get("type").getAsString()) {
-                            case "empty":
-                                this.openConfigScreen();
-                                break;
+                        if (value.get("type").getAsString() == "category") {
+                            datapath.add("data");
+                            GsonUtil.saveJson(GsonUtil.fixEntryAmount(value.get("data").getAsJsonObject()));
+                            client.openScreen(new MineMenuSelectScreen(value.get("data").getAsJsonObject(),
+                                    value.get("name").getAsString(), this));
+                        } else {
+                            switch (value.get("type").getAsString()) {
+                                case "empty":
+                                    this.openConfigScreen();
+                                    break;
 
-                            case "print":
-                                client.player.sendChatMessage(
-                                        value.get("data").getAsJsonObject().get("message").getAsString());
-                                this.client.openScreen(null);
-                                break;
+                                case "print":
+                                    client.player.sendChatMessage(
+                                            value.get("data").getAsJsonObject().get("message").getAsString());
+                                    break;
 
-                            case "clipboard":
-                                this.client.keyboard.setClipboard(value.get("data").getAsJsonObject().get("message").getAsString());
+                                case "clipboard":
+                                    this.client.keyboard.setClipboard(value.get("data").getAsJsonObject().get("message").getAsString());
+                                    break;
 
-                            case "link":
-                                Util.getOperatingSystem().open(value.get("data")
-                                        .getAsJsonObject().get("link").getAsString());
-
-                            case "category":
-                                datapath.add("data");
-                                GsonUtil.saveJson(GsonUtil.fixEntryAmount(value.get("data").getAsJsonObject()));
-
-                                client.openScreen(new MineMenuSelectScreen(value.get("data").getAsJsonObject(),
-                                        value.get("name").getAsString(), this));
-                                break;
+                                case "link":
+                                    Util.getOperatingSystem().open(value.get("data").getAsJsonObject().get("link").getAsString());
+                                    break;
+                            }
+                            this.client.openScreen(null);
                         }
                     }
                     else if (button == 1) {

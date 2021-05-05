@@ -112,9 +112,13 @@ public class MineMenuSettingsScreen extends Screen {
 
         this.itemData = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 141, 200, 20, //TEXT INPUT
                 new TranslatableText("minemenu.settings.data"));
-        if (typeCycle == TypeCycle.PRINT) {
+        if (typeCycle == TypeCycle.PRINT || typeCycle == TypeCycle.CLIPBOARD) {
             this.itemData.setText(data.get("data").getAsJsonObject().get("message").getAsString());
         }
+        else if (typeCycle == TypeCycle.LINK) {
+            this.itemData.setText(data.get("data").getAsJsonObject().get("link").getAsString());
+        }
+
         this.itemData.setMaxLength(32500);
         this.children.add(this.itemData);
 
@@ -179,7 +183,7 @@ public class MineMenuSettingsScreen extends Screen {
 
     private void updateStates() {
         this.itemName.setEditable(typeCycle != TypeCycle.EMPTY);
-        this.itemData.setEditable(typeCycle == TypeCycle.PRINT);
+        this.itemData.setEditable(typeCycle == TypeCycle.PRINT || typeCycle == TypeCycle.LINK || typeCycle == TypeCycle.CLIPBOARD);
         this.done.active = typeCycle == TypeCycle.EMPTY || !this.itemName.getText().isEmpty();
     }
 
