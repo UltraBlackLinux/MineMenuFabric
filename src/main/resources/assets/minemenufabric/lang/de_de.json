@@ -6,6 +6,7 @@
   "minemenu.settings.title": "Eintrag bearbeiten",
   "text.autoconfig.MinemenuFabric.title": "Minemenu Config",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.menuEntries": "Menü Einträge",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.menuEntries.@Tooltip": "Warnung: entfernt jeden Eintrag der nicht auf den Bildschirm passt",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.outerRadius": "Äußerer Radius",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.outerRadius.@Tooltip": "Menü wird unsichtbar, wenn kleiner als der innere Radius",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.innerRadius": "Innerer Radius",
@@ -18,4 +19,15 @@
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon.@Tooltip": "Icon für leere Einträge",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetConfig": "Config zurücksetzen",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetConfig.@Tooltip": "Die Config wird zurückgesetzt sobald du Fertig drückst"
+  "minemenu.setting.itemconfigcycle.Icon": "Icon",
+  "minemenu.setting.itemconfigcycle.Enchanted": "Verzaubert",
+  "minemenu.setting.itemconfigcycle.Skullowner": "Kopfbesitzer",
+  "minemenu.setting.typecycle.Print": "Sage",
+  "minemenu.setting.typecycle.Clipboard": "In die Zwischenablage kopieren",
+  "minemenu.setting.typecycle.Link": "Link öffnen",
+  "minemenu.setting.typecycle.Category": "Kategorie",
+  "minemenu.setting.typecycle.Empty": "Platzhalter",
+  "minemenu.setting.input.name": "Name:",
+  "minemenu.setting.input.icon": "Icon:",
+  "minemenu.setting.input.text": "Text:"
 }
