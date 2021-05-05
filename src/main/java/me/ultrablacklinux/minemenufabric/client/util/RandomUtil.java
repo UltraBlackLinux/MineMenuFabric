@@ -2,7 +2,6 @@ package me.ultrablacklinux.minemenufabric.client.util;
 
 import com.mojang.authlib.GameProfile;
 import me.shedaniel.math.Color;
-import me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.enchantment.Enchantment;
@@ -15,8 +14,6 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.registry.Registry;
-
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;

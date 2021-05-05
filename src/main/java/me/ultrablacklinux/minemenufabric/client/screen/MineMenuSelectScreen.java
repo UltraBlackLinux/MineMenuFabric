@@ -15,11 +15,8 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.registry.Registry;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -34,17 +31,15 @@ import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
 
 
 public class MineMenuSelectScreen extends Screen {
-    private JsonObject jsonItems; //MUST NEVER BE STATIC - WILL BE NULL OTHERWISE
-    private int circleEntries; //at least 5!
-    private int outerRadius;
-    private int innerRadius;
-    private ItemStack skull;
+    private final JsonObject jsonItems; //MUST NEVER BE STATIC - WILL BE NULL OTHERWISE
+    private final int circleEntries; //at least 5!
+    private final int outerRadius;
+    private final int innerRadius;
     private String skullowner;
 
     public MineMenuSelectScreen(JsonObject menuData, String menuTitle, Screen parent) {
         super(Text.of(menuTitle));
         this.jsonItems = menuData;
-        this.skull = RandomUtil.itemStackFromString(Config.get().minemenuFabric.emptyItemIcon);
 
         if (parent == null) datapath = new ArrayList<>();
 
@@ -96,19 +91,24 @@ public class MineMenuSelectScreen extends Screen {
             drawX += (outerPointX + innerPointX) / 2;
             drawY -= (outerPointY + innerPointY) / 2;
 
-            JsonObject iconData = value.get("icon").getAsJsonObject();
-            this.skullowner = iconData.get("skullOwner").getAsString();
-            ItemStack i;
-            if (MineMenuFabricClient.playerHeadData.containsKey(iconData.get("skullOwner").getAsString()) && !iconData.get("skullOwner").getAsString().isEmpty()) {
-                client.getItemRenderer().renderInGui(playerHeadData.get(iconData.get("skullOwner").getAsString()), drawX, drawY);
+            if (value.get("type").getAsString().equals("empty")) { client.getItemRenderer().renderInGui(
+                    RandomUtil.itemStackFromString(Config.get().minemenuFabric.emptyItemIcon), drawX, drawY);
             }
             else {
-                 i = RandomUtil.iconify(this::setSkullMap, iconData.get("iconItem").getAsString(),
-                        iconData.get("enchanted").getAsBoolean(), iconData.get("skullOwner").getAsString());
-                if (i == null) try {
+                JsonObject iconData = value.get("icon").getAsJsonObject();
+                this.skullowner = iconData.get("skullOwner").getAsString();
+                ItemStack i;
+                if (MineMenuFabricClient.playerHeadData.containsKey(iconData.get("skullOwner").getAsString()) && !iconData.get("skullOwner").getAsString().isEmpty()) {
                     client.getItemRenderer().renderInGui(playerHeadData.get(iconData.get("skullOwner").getAsString()), drawX, drawY);
-                } catch (Exception e) {}
-                else client.getItemRenderer().renderInGui(i, drawX, drawY);
+                }
+                else {
+                    i = RandomUtil.iconify(this::setSkullMap, iconData.get("iconItem").getAsString(),
+                            iconData.get("enchanted").getAsBoolean(), iconData.get("skullOwner").getAsString());
+                    if (i == null) try {
+                        client.getItemRenderer().renderInGui(playerHeadData.get(iconData.get("skullOwner").getAsString()), drawX, drawY);
+                    } catch (Exception e) {}
+                    else client.getItemRenderer().renderInGui(i, drawX, drawY);
+                }
             }
 
             int primaryColor;
@@ -189,8 +189,9 @@ public class MineMenuSelectScreen extends Screen {
                 boolean mouseIn = AngleHelper.isAngleBetween(mouseAngle, currentAngle, nextAngle);
                 if (mouseIn) {
                     datapath.add(entry.getKey());
+                    boolean dontClose = false;
                     if (button == 0) {
-                        if (value.get("type").getAsString() == "category") {
+                        if (value.get("type").getAsString().equals("category")) {
                             datapath.add("data");
                             GsonUtil.saveJson(GsonUtil.fixEntryAmount(value.get("data").getAsJsonObject()));
                             client.openScreen(new MineMenuSelectScreen(value.get("data").getAsJsonObject(),
@@ -198,6 +199,7 @@ public class MineMenuSelectScreen extends Screen {
                         } else {
                             switch (value.get("type").getAsString()) {
                                 case "empty":
+                                    dontClose = true;
                                     this.openConfigScreen();
                                     break;
 
@@ -214,7 +216,7 @@ public class MineMenuSelectScreen extends Screen {
                                     Util.getOperatingSystem().open(value.get("data").getAsJsonObject().get("link").getAsString());
                                     break;
                             }
-                            this.client.openScreen(null);
+                            if (!dontClose) this.client.openScreen(null);
                         }
                     }
                     else if (button == 1) {

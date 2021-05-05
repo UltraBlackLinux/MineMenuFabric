@@ -36,7 +36,6 @@ public class MineMenuSettingsScreen extends Screen {
     private ButtonWidget type;
     private TextFieldWidget iconDataText;
     private ButtonWidget iconDataYesNo;
-    private boolean iconDataButtonValue;
 
     private boolean iconDataBoolean;
     private String iconItem;
@@ -54,14 +53,12 @@ public class MineMenuSettingsScreen extends Screen {
         itemConfigCycle = ItemConfigCycle.ICON;
         iconDataBoolean = true; //wtf, works I guess
 
-
         JsonObject data = minemenuData;
         for (String s : datapath) data = data.get(s).getAsJsonObject();
         JsonObject iconData = data.get("icon").getAsJsonObject();
         this.skullowner = iconData.get("skullOwner").getAsString();
         this.enchanted = iconData.get("enchanted").getAsBoolean();
         this.iconItem = iconData.get("iconItem").getAsString();
-
     }
 
     public void tick() {
@@ -91,10 +88,6 @@ public class MineMenuSettingsScreen extends Screen {
 
         this.iconDataYesNo = this.addButton(
                 new ButtonWidget(this.width / 2 - 100+100, 80, 100, 20, Text.of(""), (buttonWidget) -> {
-
-                    if (itemConfigCycle == ItemConfigCycle.ENCHANTED) {
-                        this.iconDataYesNo.setMessage(this.iconDataButtonValue ? ScreenTexts.YES : ScreenTexts.NO);
-                    }
                     this.iconDataBoolean = !iconDataBoolean;
                     this.saveIconVariable();
                     this.updateIconInput();
@@ -219,14 +212,14 @@ public class MineMenuSettingsScreen extends Screen {
 
         ItemStack i;
         if (MineMenuFabricClient.playerHeadData.containsKey(skullowner)) {
-            client.getItemRenderer().renderInGui(playerHeadData.get(skullowner), this.width / 2 - 120, 91);
+            client.getItemRenderer().renderInGui(playerHeadData.get(skullowner), this.width / 2 - 120, 82);
         }
         else {
             i = RandomUtil.iconify(this::setSkullMap, iconItem, enchanted, skullowner);
             if (i == null) try {
-                client.getItemRenderer().renderInGui(MineMenuFabricClient.playerHeadData.get(skullowner), this.width / 2 - 120, 91);
+                client.getItemRenderer().renderInGui(MineMenuFabricClient.playerHeadData.get(skullowner), this.width / 2 - 120, 82);
             } catch (Exception e) {}
-            else client.getItemRenderer().renderInGui(i, this.width / 2 - 120, 91);
+            else client.getItemRenderer().renderInGui(i, this.width / 2 - 120, 82);
         }
 
 

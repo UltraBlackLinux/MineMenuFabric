@@ -15,7 +15,6 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -26,6 +25,7 @@ public class MineMenuFabricClient implements ClientModInitializer {
     public static JsonObject minemenuData;
     public static ArrayList<String> datapath;
     public static HashMap<String, ItemStack> playerHeadData = new HashMap<>();
+    private static boolean buttonPressed;
 
     @Override
     public void onInitializeClient() {
@@ -53,7 +53,7 @@ public class MineMenuFabricClient implements ClientModInitializer {
                             new TranslatableText("minemenu.default.title").getString(), null));
                 }
             }
-
         });
     }
 }
+
