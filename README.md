@@ -5,8 +5,11 @@
 # MineMenuFabric
 Minemenu, but for Fabric
 
-Note: This project doesn't have anything to do with Girafi's Minemenu, This is only a personal fork!
+Note: This project doesn't have anything to do with Girafi's Minemenu, This is only a fabric port!
 
 MineMenuFabric is a customizable menu, that lets you manage commands and chat messages in a simple, yet powerful circular menu
 
+Supports enchanted/playerhead icons and copying text, opening links, saying a message in the chat and creating categories to keep your menu sorted!
+
+Thanks to Girafi for the original mod [❤️](https://www.curseforge.com/minecraft/mc-mods/minemenu)
 
