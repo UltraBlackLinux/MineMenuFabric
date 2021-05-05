@@ -13,17 +13,23 @@ import java.util.Set;
 
 public class GsonUtil {
 
-    public static JsonObject template(String name, String icon, String type, JsonObject data) {
+    public static JsonObject template(String name, String type, JsonObject data, String itemIcon, boolean enchanted, String skullOwner) {
+        JsonObject icon = new JsonObject();
+        icon.add("iconItem", new JsonPrimitive(itemIcon));
+        icon.add("enchanted", new JsonPrimitive(enchanted));
+        icon.add("skullOwner", new JsonPrimitive(skullOwner));
+
+
         JsonObject item = new JsonObject();
         item.add("name", new JsonPrimitive(name));
-        item.add("icon", new JsonPrimitive(icon));
+        item.add("icon", icon);
         item.add("type", new JsonPrimitive(type));
         item.add("data", data);
         return item;
     }
 
     public static JsonObject empty() {
-        return template("", "", "empty", new JsonObject());
+        return template("", "empty", new JsonObject(), "", false, "");
     }
 
     public static JsonObject fixEntryAmount(JsonObject j) {
@@ -44,8 +50,8 @@ public class GsonUtil {
     }
 
     /**
-     * This is real shit
-     * definitely didn't take me like 3 hours to come up with
+     * This is real shit.
+     * definitely didn't take me like 3 hours to come up with. 
      * And even more due to a stupid bug
      */
     @SuppressWarnings("unchecked")

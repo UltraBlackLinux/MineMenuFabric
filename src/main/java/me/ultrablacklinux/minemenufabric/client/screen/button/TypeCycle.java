@@ -1,10 +1,13 @@
-package me.ultrablacklinux.minemenufabric.client.screen;
+package me.ultrablacklinux.minemenufabric.client.screen.button;
 
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Nameable;
 
 public enum TypeCycle implements Nameable {
     PRINT,
+    CLIPBOARD,
+    LINK,
     CATEGORY,
     EMPTY;
 
@@ -17,6 +20,6 @@ public enum TypeCycle implements Nameable {
 
     @Override
     public Text getName() {
-        return Text.of(this.name().substring(0,1) + this.name().substring(1).toLowerCase());
+        return new TranslatableText("minemenu.setting.typecycle." + this.name().substring(0,1) + this.name().substring(1).toLowerCase());
     }
 }

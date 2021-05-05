@@ -1,10 +1,9 @@
 #Crashes
-- Crash when removing menu entries via FixEntryAmount: ..keyset no such method error
-- Wrong user input in the config
+- Wrong user input in the config - working?
 
 #Not working stuff
-Empty item icon
+
+#TODO
+- toggle keybind
 
 #Features
-- Save to clipboard
-

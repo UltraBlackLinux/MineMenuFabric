@@ -3,6 +3,7 @@ package me.ultrablacklinux.minemenufabric.client.screen;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient;
 import me.ultrablacklinux.minemenufabric.client.config.Config;
 import me.ultrablacklinux.minemenufabric.client.util.AngleHelper;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
@@ -14,10 +15,13 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import org.lwjgl.opengl.GL11;
+
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -34,10 +38,13 @@ public class MineMenuSelectScreen extends Screen {
     private int circleEntries; //at least 5!
     private int outerRadius;
     private int innerRadius;
+    private ItemStack skull;
+    private String skullowner;
 
     public MineMenuSelectScreen(JsonObject menuData, String menuTitle, Screen parent) {
         super(Text.of(menuTitle));
         this.jsonItems = menuData;
+        this.skull = RandomUtil.itemStackFromString(Config.get().minemenuFabric.emptyItemIcon);
 
         if (parent == null) datapath = new ArrayList<>();
 
@@ -89,18 +96,28 @@ public class MineMenuSelectScreen extends Screen {
             drawX += (outerPointX + innerPointX) / 2;
             drawY -= (outerPointY + innerPointY) / 2;
 
-            ItemStack icon;
-            if (value.get("type").getAsString().equals("empty")) {
-                icon = Registry.ITEM.get(new Identifier(Config.get().minemenuFabric.emptyItemIcon)).getDefaultStack();
+            JsonObject iconData = value.get("icon").getAsJsonObject();
+            this.skullowner = iconData.get("skullOwner").getAsString();
+            ItemStack i;
+            if (MineMenuFabricClient.playerHeadData.containsKey(iconData.get("skullOwner").getAsString()) && !iconData.get("skullOwner").getAsString().isEmpty()) {
+                client.getItemRenderer().renderInGui(playerHeadData.get(iconData.get("skullOwner").getAsString()), drawX, drawY);
             }
             else {
-                icon = Registry.ITEM.get(new Identifier(value.get("icon").getAsString())).getDefaultStack();
+                 i = RandomUtil.iconify(this::setSkullMap, iconData.get("iconItem").getAsString(),
+                        iconData.get("enchanted").getAsBoolean(), iconData.get("skullOwner").getAsString());
+                if (i == null) try {
+                    client.getItemRenderer().renderInGui(playerHeadData.get(iconData.get("skullOwner").getAsString()), drawX, drawY);
+                } catch (Exception e) {}
+                else client.getItemRenderer().renderInGui(i, drawX, drawY);
             }
 
-            client.getItemRenderer().renderInGui(icon, drawX, drawY);
+            int primaryColor;
+            try { primaryColor = RandomUtil.getColor(Config.get().minemenuFabric.primaryColor).getColor(); }
+            catch (Exception e) { primaryColor = RandomUtil.getColor("#A00000CC").getColor(); }
 
-            int primaryColor = RandomUtil.getColor(Config.get().minemenuFabric.primaryColor).getColor();
-            int secondaryColor = RandomUtil.getColor(Config.get().minemenuFabric.secondaryColor).getColor();
+            int secondaryColor;
+            try { secondaryColor = RandomUtil.getColor(Config.get().minemenuFabric.secondaryColor).getColor(); }
+            catch (Exception e) { secondaryColor = RandomUtil.getColor("#212121D0").getColor(); }
 
             if (isHovered) {
                 this.drawDoughnutSegment(matrixStack,
@@ -134,6 +151,10 @@ public class MineMenuSelectScreen extends Screen {
             currentAngle += degrees;
             currentAngle = (int) AngleHelper.correctAngle(currentAngle);
         }
+    }
+
+    private void setSkullMap(ItemStack itemStack) {
+        MineMenuFabricClient.playerHeadData.put(skullowner, itemStack);
     }
 
     @Override
@@ -179,6 +200,13 @@ public class MineMenuSelectScreen extends Screen {
                                         value.get("data").getAsJsonObject().get("message").getAsString());
                                 this.client.openScreen(null);
                                 break;
+
+                            case "clipboard":
+                                this.client.keyboard.setClipboard(value.get("data").getAsJsonObject().get("message").getAsString());
+
+                            case "link":
+                                Util.getOperatingSystem().open(value.get("data")
+                                        .getAsJsonObject().get("link").getAsString());
 
                             case "category":
                                 datapath.add("data");
