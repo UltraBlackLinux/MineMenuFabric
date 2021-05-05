@@ -18,7 +18,7 @@
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon": "Leeres Icon",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon.@Tooltip": "Icon für leere Einträge",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetConfig": "Config zurücksetzen",
-  "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetConfig.@Tooltip": "Die Config wird zurückgesetzt sobald du Fertig drückst"
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetConfig.@Tooltip": "Die Config wird zurückgesetzt sobald du Fertig drückst",
   "minemenu.setting.itemconfigcycle.Icon": "Icon",
   "minemenu.setting.itemconfigcycle.Enchanted": "Verzaubert",
   "minemenu.setting.itemconfigcycle.Skullowner": "Kopfbesitzer",
