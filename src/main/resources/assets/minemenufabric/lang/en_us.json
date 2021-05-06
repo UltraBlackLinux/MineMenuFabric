@@ -17,6 +17,8 @@
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.secondaryColor.@Tooltip": "Hex color - Supports \"#\", \"0x\" and more",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon": "Empty Icon",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon.@Tooltip": "Icon for empty menu entries",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetHeadCache": "Clear the PlayerHead-cache",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetHeadCache.@Tooltip": "The PlayerHead-cache will Clear, once you press done",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetConfig": "Reset the Config",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetConfig.@Tooltip": "The Config will reset, once you press done",
   "minemenu.setting.itemconfigcycle.Icon": "Icon",
@@ -29,5 +31,6 @@
   "minemenu.setting.typecycle.Empty": "Placeholder",
   "minemenu.setting.input.name": "Name:",
   "minemenu.setting.input.icon": "Icon:",
-  "minemenu.setting.input.text": "Text:"
+  "minemenu.setting.input.text": "Text:",
+  "minemenu.error.config": "§l§c Invalid config! Reset it via the config menu! \n(This may happen after an update)"
 }

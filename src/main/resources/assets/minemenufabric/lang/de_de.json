@@ -17,6 +17,8 @@
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.secondaryColor.@Tooltip": "Hex Farbe - Unterstützt \"#\", \"0x\" und mehr",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon": "Leeres Icon",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon.@Tooltip": "Icon für leere Einträge",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetHeadCache": "Spielerkopf-cache leeren",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetHeadCache.@Tooltip": "Der Spielerkopf-cache wird geleert sobald du Fertig drückst",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetConfig": "Config zurücksetzen",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetConfig.@Tooltip": "Die Config wird zurückgesetzt sobald du Fertig drückst",
   "minemenu.setting.itemconfigcycle.Icon": "Icon",
@@ -29,5 +31,6 @@
   "minemenu.setting.typecycle.Empty": "Platzhalter",
   "minemenu.setting.input.name": "Name:",
   "minemenu.setting.input.icon": "Icon:",
-  "minemenu.setting.input.text": "Text:"
+  "minemenu.setting.input.text": "Text:",
+  "minemenu.error.config": "§l§c Unbrauchbare Config! Setze sie über das Konfigurationsmenü zurück! \n(Dies kann nach einem Update passieren)"
 }

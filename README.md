@@ -12,6 +12,6 @@ MineMenuFabric is a customizable menu, that lets you manage commands and chat me
 Supports enchanted/playerhead icons and copying text, opening links, saying a message in the chat and creating categories to keep your menu sorted!
 
 
-**Note: You need to reset the config after some major updates, as config sometimes changes and crashes your game, when you open the menu!**
+**Note: You may need to reset the config after major updates, as the as it might change and crash your game, as you open the menu!**
 
 Thanks to Girafi for the original mod [❤️](https://www.curseforge.com/minecraft/mc-mods/minemenu)

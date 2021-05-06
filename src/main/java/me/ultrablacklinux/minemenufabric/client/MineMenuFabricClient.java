@@ -4,7 +4,9 @@ import com.google.gson.JsonObject;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.ultrablacklinux.minemenufabric.client.config.Config;
 import me.ultrablacklinux.minemenufabric.client.screen.MineMenuSelectScreen;
+import me.ultrablacklinux.minemenufabric.client.screen.MineMenuSettingsScreen;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
+import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,6 +15,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
@@ -24,8 +27,7 @@ public class MineMenuFabricClient implements ClientModInitializer {
     public static KeyBinding keyBinding;
     public static JsonObject minemenuData;
     public static ArrayList<String> datapath;
-    public static HashMap<String, ItemStack> playerHeadData = new HashMap<>();
-    private static boolean buttonPressed;
+    public static HashMap<String, ItemStack> playerHeadCache = new HashMap<>();
 
     @Override
     public void onInitializeClient() {
@@ -42,15 +44,27 @@ public class MineMenuFabricClient implements ClientModInitializer {
                 minemenuData = new JsonObject();
                 AutoConfig.getConfigHolder(Config.class).save();
             }
+
+            if (Config.get().minemenuFabric.resetHeadCache) {
+                Config.get().minemenuFabric.resetHeadCache = false;
+                playerHeadCache.clear();
+            }
+
             if (mineMenuSelectScreen != null) this.mineMenuSelectScreen.tick();
         });
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (keyBinding.wasPressed()) {
                 if (!(client.currentScreen instanceof MineMenuSelectScreen)) {
-                    minemenuData = GsonUtil.fixEntryAmount(minemenuData);
-                    client.openScreen(new MineMenuSelectScreen(minemenuData,
-                            new TranslatableText("minemenu.default.title").getString(), null));
+                    minemenuData = GsonUtil.fixEntryAmount(minemenuData); //it is not already assigned dumb intelli
+                    try {
+                        client.openScreen(new MineMenuSelectScreen(MineMenuFabricClient.minemenuData,
+                                new TranslatableText("minemenu.default.title").getString(), null));
+                    } catch (NullPointerException e) {
+                        client.openScreen(null);
+                        client.player.sendMessage(new TranslatableText("minemenu.error.config"), false);
+                    }
+
                 }
             }
         });

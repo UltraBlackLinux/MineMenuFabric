@@ -17,14 +17,13 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 import java.util.ArrayList;
 
 import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
-import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.playerHeadData;
+import static me.ultrablacklinux.minemenufabric.client.config.Config.*;
 
 public class MineMenuSettingsScreen extends Screen {
     private TypeCycle typeCycle;
@@ -105,6 +104,8 @@ public class MineMenuSettingsScreen extends Screen {
 
         this.itemData = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 141, 200, 20, //TEXT INPUT
                 new TranslatableText("minemenu.settings.data"));
+
+
         if (typeCycle == TypeCycle.PRINT || typeCycle == TypeCycle.CLIPBOARD) {
             this.itemData.setText(data.get("data").getAsJsonObject().get("message").getAsString());
         }
@@ -120,7 +121,7 @@ public class MineMenuSettingsScreen extends Screen {
             typeCycle = typeCycle.next();
             this.type.setMessage(typeCycle.getName());
             this.updateStates();
-            this.updateStates();
+            this.updateIconInput();
         }));
 
         //----------------------------
@@ -131,7 +132,6 @@ public class MineMenuSettingsScreen extends Screen {
         this.done = this.addButton(new ButtonWidget(this.width / 2, 220, 100, 20,
                 ScreenTexts.DONE, (buttonWidget) -> close(false)));
 
-        this.updateStates();
         this.updateStates();
         this.updateIconInput();
     }
@@ -155,15 +155,13 @@ public class MineMenuSettingsScreen extends Screen {
 
     private void updateIconInput() {
         this.iconDataYesNo.active = itemConfigCycle == ItemConfigCycle.ENCHANTED;
-        this.iconDataText.setEditable(itemConfigCycle != ItemConfigCycle.ENCHANTED);
+        this.iconDataText.setEditable(itemConfigCycle != ItemConfigCycle.ENCHANTED && typeCycle != TypeCycle.EMPTY);
+        this.itemSettingType.active = typeCycle != TypeCycle.EMPTY;
         if (itemConfigCycle != ItemConfigCycle.ENCHANTED) this.iconDataYesNo.setMessage(Text.of(""));
-        if (itemConfigCycle == ItemConfigCycle.SKULLOWNER) this.iconDataText.setEditable(iconItem.endsWith("player_head"));
+        if (itemConfigCycle == ItemConfigCycle.SKULLOWNER) this.iconItem = "player_head";
+        this.iconDataYesNo.setMessage(iconDataBoolean ? ScreenTexts.YES : ScreenTexts.NO);
 
         switch (itemConfigCycle) {
-            case ENCHANTED:
-                this.iconDataYesNo.setMessage(enchanted ? ScreenTexts.YES : ScreenTexts.NO);
-                break;
-
             case ICON:
                 this.iconDataText.setText(this.iconItem);
                 break;
@@ -176,6 +174,7 @@ public class MineMenuSettingsScreen extends Screen {
 
     private void updateStates() {
         this.itemName.setEditable(typeCycle != TypeCycle.EMPTY);
+
         this.itemData.setEditable(typeCycle == TypeCycle.PRINT || typeCycle == TypeCycle.LINK || typeCycle == TypeCycle.CLIPBOARD);
         this.done.active = typeCycle == TypeCycle.EMPTY || !this.itemName.getText().isEmpty();
     }
@@ -211,23 +210,18 @@ public class MineMenuSettingsScreen extends Screen {
         this.itemData.render(matrices, mouseX, mouseY, delta);
 
         ItemStack i;
-        if (MineMenuFabricClient.playerHeadData.containsKey(skullowner)) {
-            client.getItemRenderer().renderInGui(playerHeadData.get(skullowner), this.width / 2 - 120, 82);
+        if (playerHeadCache.containsKey(skullowner) && !skullowner.trim().isEmpty()) {
+            client.getItemRenderer().renderInGui(playerHeadCache.get(skullowner), this.width / 2 - 120, 82);
         }
         else {
-            i = RandomUtil.iconify(this::setSkullMap, iconItem, enchanted, skullowner);
+            i = RandomUtil.iconify(iconItem, enchanted, skullowner);
             if (i == null) try {
-                client.getItemRenderer().renderInGui(MineMenuFabricClient.playerHeadData.get(skullowner), this.width / 2 - 120, 82);
+                client.getItemRenderer().renderInGui(playerHeadCache.get(skullowner), this.width / 2 - 120, 82);
             } catch (Exception e) {}
             else client.getItemRenderer().renderInGui(i, this.width / 2 - 120, 82);
         }
 
-
         super.render(matrices, mouseX, mouseY, delta);
-    }
-
-    private void setSkullMap(ItemStack itemStack) {
-        MineMenuFabricClient.playerHeadData.put(skullowner, itemStack);
     }
 
 
@@ -267,7 +261,7 @@ public class MineMenuSettingsScreen extends Screen {
         }
 
         GsonUtil.saveJson(GsonUtil.template(name, typeCycle.name().toLowerCase(), subData, iconItem, enchanted, skullowner));
-        Config.get().minemenuFabric.minemenuData = minemenuData;
+        get().minemenuFabric.minemenuData = minemenuData;
         AutoConfig.getConfigHolder(Config.class).save();
     }
 }

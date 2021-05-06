@@ -6,6 +6,9 @@ import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import me.shedaniel.autoconfig.serializer.PartitioningSerializer;
+import net.minecraft.item.ItemStack;
+
+import java.util.HashMap;
 
 @me.shedaniel.autoconfig.annotation.Config(name = "MinemenuFabric")
 @me.shedaniel.autoconfig.annotation.Config.Gui.Background("minecraft:textures/block/gray_concrete.png")
@@ -50,9 +53,9 @@ public class Config extends PartitioningSerializer.GlobalData {
         public String emptyItemIcon = "minecraft:air";
 
         @ConfigEntry.Gui.Tooltip
+        public boolean resetHeadCache = false;
+
+        @ConfigEntry.Gui.Tooltip
         public boolean resetConfig = false;
-
     }
-
-
 }

@@ -98,14 +98,15 @@ public class MineMenuSelectScreen extends Screen {
                 JsonObject iconData = value.get("icon").getAsJsonObject();
                 this.skullowner = iconData.get("skullOwner").getAsString();
                 ItemStack i;
-                if (MineMenuFabricClient.playerHeadData.containsKey(iconData.get("skullOwner").getAsString()) && !iconData.get("skullOwner").getAsString().isEmpty()) {
-                    client.getItemRenderer().renderInGui(playerHeadData.get(iconData.get("skullOwner").getAsString()), drawX, drawY);
+                if (MineMenuFabricClient.playerHeadCache.containsKey(iconData.get("skullOwner").getAsString()) &&
+                        !iconData.get("skullOwner").getAsString().trim().isEmpty()) {
+                    client.getItemRenderer().renderInGui(playerHeadCache.get(iconData.get("skullOwner").getAsString()), drawX, drawY);
                 }
                 else {
-                    i = RandomUtil.iconify(this::setSkullMap, iconData.get("iconItem").getAsString(),
+                    i = RandomUtil.iconify(iconData.get("iconItem").getAsString(),
                             iconData.get("enchanted").getAsBoolean(), iconData.get("skullOwner").getAsString());
                     if (i == null) try {
-                        client.getItemRenderer().renderInGui(playerHeadData.get(iconData.get("skullOwner").getAsString()), drawX, drawY);
+                        client.getItemRenderer().renderInGui(playerHeadCache.get(iconData.get("skullOwner").getAsString()), drawX, drawY);
                     } catch (Exception e) {}
                     else client.getItemRenderer().renderInGui(i, drawX, drawY);
                 }
@@ -153,22 +154,17 @@ public class MineMenuSelectScreen extends Screen {
         }
     }
 
-    private void setSkullMap(ItemStack itemStack) {
-        MineMenuFabricClient.playerHeadData.put(skullowner, itemStack);
-    }
-
     @Override
     public void tick() {
-        if (true){ //keybinding mode - hold or pressed
-            if (keyBinding.wasPressed()) { //check for keybinding pressed
-                final double mouseX = this.client.mouse.getX() * ((double) this.client.getWindow().getScaledWidth() /
-                        this.client.getWindow().getWidth());
-                final double mouseY = this.client.mouse.getY() * ((double) this.client.getWindow().getScaledHeight() /
-                        this.client.getWindow().getHeight());
+        if (keyBinding.wasPressed()) {
+            final double mouseX = this.client.mouse.getX() * ((double) this.client.getWindow().getScaledWidth() /
+                    this.client.getWindow().getWidth());
+            final double mouseY = this.client.mouse.getY() * ((double) this.client.getWindow().getScaledHeight() /
+                    this.client.getWindow().getHeight());
 
-                this.mouseClicked(mouseX, mouseY, 0);
-            }
+            //this.mouseClicked(mouseX, mouseY, 0);
         }
+
     }
 
     @Override
@@ -200,7 +196,7 @@ public class MineMenuSelectScreen extends Screen {
                             switch (value.get("type").getAsString()) {
                                 case "empty":
                                     dontClose = true;
-                                    this.openConfigScreen();
+                                    RandomUtil.openConfigScreen(this);
                                     break;
 
                                 case "print":
@@ -220,7 +216,7 @@ public class MineMenuSelectScreen extends Screen {
                         }
                     }
                     else if (button == 1) {
-                        this.openConfigScreen();
+                        RandomUtil.openConfigScreen(this);
                     }
                 }
 
@@ -232,15 +228,6 @@ public class MineMenuSelectScreen extends Screen {
             this.client.openScreen(null);
         }
         return false;
-    }
-
-    private void openConfigScreen() {
-        try {
-            client.openScreen(new MineMenuSettingsScreen(this, datapath));
-        } catch (NullPointerException e) {
-            client.openScreen(null);
-            client.player.sendMessage(Text.of("§l§c Corrupt config! Reset it via the config menu!"), false);
-        }
     }
 
     @Override
