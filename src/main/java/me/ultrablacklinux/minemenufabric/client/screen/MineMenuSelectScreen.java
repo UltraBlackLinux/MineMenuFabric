@@ -72,7 +72,7 @@ public class MineMenuSelectScreen extends Screen {
             int nextAngle = currentAngle + degrees;
             nextAngle = (int) AngleHelper.correctAngle(nextAngle);
 
-            boolean mouseIn = AngleHelper.isAngleBetween(mouseAngle, currentAngle, nextAngle);
+            boolean mouseIn = AngleHelper.isAngleBetween(mouseAngle, currentAngle-0.1f, nextAngle-0.1f);
 
             boolean isHovered = !AngleHelper.isInsideCircle(mouseX, mouseY, centerX, centerY, innerRadius)
                     && AngleHelper.isInsideCircle(mouseX, mouseY, centerX, centerY,  outerRadius)
@@ -182,7 +182,7 @@ public class MineMenuSelectScreen extends Screen {
                 JsonObject value = entry.getValue().getAsJsonObject();
                 int nextAngle = currentAngle + degrees;
                 nextAngle = (int) AngleHelper.correctAngle(nextAngle);
-                boolean mouseIn = AngleHelper.isAngleBetween(mouseAngle, currentAngle, nextAngle);
+                boolean mouseIn = AngleHelper.isAngleBetween(mouseAngle, currentAngle-0.1f, nextAngle-0.1f);
                 if (mouseIn) {
                     datapath.add(entry.getKey());
                     boolean dontClose = false;

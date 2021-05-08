@@ -30,10 +30,10 @@ public class AngleHelper {
         return distance <= radius;
     }
 
-    public static boolean isAngleBetween(int target, int angle1, int angle2) {
-        int rAngle = ((angle2 - angle1) % 360 + 360) % 360;
+    public static boolean isAngleBetween(float target, float angle1, float angle2) {
+        float rAngle = ((angle2 - angle1) % 360 + 360) % 360;
         if (rAngle >= 180) {
-            int temp = angle1;
+            float temp = angle1;
             angle1 = angle2;
             angle2 = temp;
         }
