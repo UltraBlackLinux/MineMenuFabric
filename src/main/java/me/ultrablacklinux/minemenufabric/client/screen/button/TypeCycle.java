@@ -6,8 +6,10 @@ import net.minecraft.util.Nameable;
 
 public enum TypeCycle implements Nameable {
     PRINT,
+    CHATBOX,
     CLIPBOARD,
     LINK,
+
     CATEGORY,
     EMPTY;
 

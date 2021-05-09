@@ -8,6 +8,7 @@ import me.ultrablacklinux.minemenufabric.client.config.Config;
 import me.ultrablacklinux.minemenufabric.client.util.AngleHelper;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
 import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -35,7 +36,6 @@ public class MineMenuSelectScreen extends Screen {
     private final int circleEntries; //at least 5!
     private final int outerRadius;
     private final int innerRadius;
-    private String skullowner;
 
     public MineMenuSelectScreen(JsonObject menuData, String menuTitle, Screen parent) {
         super(Text.of(menuTitle));
@@ -96,7 +96,6 @@ public class MineMenuSelectScreen extends Screen {
             }
             else {
                 JsonObject iconData = value.get("icon").getAsJsonObject();
-                this.skullowner = iconData.get("skullOwner").getAsString();
                 ItemStack i;
                 if (MineMenuFabricClient.playerHeadCache.containsKey(iconData.get("skullOwner").getAsString()) &&
                         !iconData.get("skullOwner").getAsString().trim().isEmpty()) {
@@ -155,19 +154,6 @@ public class MineMenuSelectScreen extends Screen {
     }
 
     @Override
-    public void tick() {
-        if (keyBinding.wasPressed()) {
-            final double mouseX = this.client.mouse.getX() * ((double) this.client.getWindow().getScaledWidth() /
-                    this.client.getWindow().getWidth());
-            final double mouseY = this.client.mouse.getY() * ((double) this.client.getWindow().getScaledHeight() /
-                    this.client.getWindow().getHeight());
-
-            //this.mouseClicked(mouseX, mouseY, 0);
-        }
-
-    }
-
-    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         int centerX = this.client.getWindow().getScaledWidth() / 2;
         int centerY = this.client.getWindow().getScaledHeight() / 2;
@@ -185,35 +171,8 @@ public class MineMenuSelectScreen extends Screen {
                 boolean mouseIn = AngleHelper.isAngleBetween(mouseAngle, currentAngle-0.1f, nextAngle-0.1f);
                 if (mouseIn) {
                     datapath.add(entry.getKey());
-                    boolean dontClose = false;
                     if (button == 0) {
-                        if (value.get("type").getAsString().equals("category")) {
-                            datapath.add("data");
-                            GsonUtil.saveJson(GsonUtil.fixEntryAmount(value.get("data").getAsJsonObject()));
-                            client.openScreen(new MineMenuSelectScreen(value.get("data").getAsJsonObject(),
-                                    value.get("name").getAsString(), this));
-                        } else {
-                            switch (value.get("type").getAsString()) {
-                                case "empty":
-                                    dontClose = true;
-                                    RandomUtil.openConfigScreen(this);
-                                    break;
-
-                                case "print":
-                                    client.player.sendChatMessage(
-                                            value.get("data").getAsJsonObject().get("message").getAsString());
-                                    break;
-
-                                case "clipboard":
-                                    this.client.keyboard.setClipboard(value.get("data").getAsJsonObject().get("message").getAsString());
-                                    break;
-
-                                case "link":
-                                    Util.getOperatingSystem().open(value.get("data").getAsJsonObject().get("link").getAsString());
-                                    break;
-                            }
-                            if (!dontClose) this.client.openScreen(null);
-                        }
+                        this.handleTypes(value);
                     }
                     else if (button == 1) {
                         RandomUtil.openConfigScreen(this);
@@ -263,5 +222,40 @@ public class MineMenuSelectScreen extends Screen {
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
         matrixStack.pop();
+    }
+
+    private void handleTypes(JsonObject value) {
+        boolean dontClose = false;
+        switch (value.get("type").getAsString()) {
+            case "empty":
+                dontClose = true;
+                RandomUtil.openConfigScreen(this);
+                break;
+
+            case "category":
+                dontClose = true;
+                datapath.add("data");
+                GsonUtil.saveJson(GsonUtil.fixEntryAmount(value.get("data").getAsJsonObject()));
+                client.openScreen(new MineMenuSelectScreen(value.get("data").getAsJsonObject(),
+                        value.get("name").getAsString(), this));
+
+            case "print":
+                client.player.sendChatMessage(value.get("data").getAsJsonObject().get("message").getAsString());
+                break;
+
+            case "chatbox":
+                dontClose = true;
+                client.openScreen(new ChatScreen(value.get("data").getAsJsonObject().get("message").getAsString()));
+                break;
+
+            case "clipboard":
+                this.client.keyboard.setClipboard(value.get("data").getAsJsonObject().get("message").getAsString());
+                break;
+
+            case "link":
+                Util.getOperatingSystem().open(value.get("data").getAsJsonObject().get("link").getAsString());
+                break;
+        }
+        if (!dontClose) this.client.openScreen(null);
     }
 }

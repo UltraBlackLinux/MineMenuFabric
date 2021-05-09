@@ -28,6 +28,7 @@
   "minemenu.setting.typecycle.Clipboard": "Copy to Clipboard",
   "minemenu.setting.typecycle.Link": "Open Link",
   "minemenu.setting.typecycle.Category": "Category",
+  "minemenu.setting.typecycle.Chatbox": "Add to Chatbox queue",
   "minemenu.setting.typecycle.Empty": "Placeholder",
   "minemenu.setting.input.name": "Name:",
   "minemenu.setting.input.icon": "Icon:",
