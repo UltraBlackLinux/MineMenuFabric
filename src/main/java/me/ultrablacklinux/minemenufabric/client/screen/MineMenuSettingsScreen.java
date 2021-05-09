@@ -49,7 +49,6 @@ public class MineMenuSettingsScreen extends Screen {
         this.parent = parent;
         this.iconDataBoolean = false;
         itemConfigCycle = ItemConfigCycle.ICON;
-        iconDataBoolean = true; //wtf, works I guess
 
         JsonObject data = minemenuData;
         for (String s : datapath) data = data.get(s).getAsJsonObject();
