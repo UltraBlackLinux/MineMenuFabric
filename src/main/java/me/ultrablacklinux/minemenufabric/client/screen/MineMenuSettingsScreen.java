@@ -6,10 +6,10 @@ import com.google.gson.JsonPrimitive;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient;
 import me.ultrablacklinux.minemenufabric.client.config.Config;
-import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
-import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
 import me.ultrablacklinux.minemenufabric.client.screen.button.ItemConfigCycle;
 import me.ultrablacklinux.minemenufabric.client.screen.button.TypeCycle;
+import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
+import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -41,21 +41,26 @@ public class MineMenuSettingsScreen extends Screen {
     private String skullowner;
 
     private final Screen parent;
+    JsonObject data;
 
     public MineMenuSettingsScreen(Screen parent, ArrayList<String> datapath) {
         super(new TranslatableText("minemenu.settings.title"));
-
-        MineMenuFabricClient.datapath = datapath; //TODO fuck this
         this.parent = parent;
-        this.iconDataBoolean = false;
+        MineMenuFabricClient.datapath = datapath; //TODO fuck this
+
         itemConfigCycle = ItemConfigCycle.ICON;
 
-        JsonObject data = minemenuData;
-        for (String s : datapath) data = data.get(s).getAsJsonObject();
+        data = minemenuData;
+        for (String s : datapath) {
+            data = data.get(s).getAsJsonObject();
+        }
+
         JsonObject iconData = data.get("icon").getAsJsonObject();
         this.skullowner = iconData.get("skullOwner").getAsString();
         this.enchanted = iconData.get("enchanted").getAsBoolean();
         this.iconItem = iconData.get("iconItem").getAsString();
+        this.iconDataBoolean = false;
+        typeCycle = TypeCycle.valueOf(data.get("type").getAsString().toUpperCase());
     }
 
     public void tick() {
@@ -65,10 +70,6 @@ public class MineMenuSettingsScreen extends Screen {
     }
 
     protected void init() {
-        JsonObject data = minemenuData;
-        for (String s : datapath) data = data.get(s).getAsJsonObject();
-        typeCycle = TypeCycle.valueOf(data.get("type").getAsString().toUpperCase());
-
         this.client.keyboard.setRepeatEvents(true);
 
         this.itemName = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 40, 200, 20,
@@ -107,7 +108,6 @@ public class MineMenuSettingsScreen extends Screen {
 
         this.itemData = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 141, 200, 20, //TEXT INPUT
                 new TranslatableText("minemenu.settings.data"));
-
         this.itemData.setMaxLength(32500);
         this.children.add(this.itemData);
 
@@ -131,14 +131,13 @@ public class MineMenuSettingsScreen extends Screen {
     }
 
     private void updateInput() {
+        if (itemConfigCycle == ItemConfigCycle.ENCHANTED) iconDataBoolean = enchanted;
+        else iconDataBoolean = false;
         this.itemSettingType.active = typeCycle != TypeCycle.EMPTY;
 
         this.iconDataYesNo.active = itemConfigCycle == ItemConfigCycle.ENCHANTED;
         if (itemConfigCycle != ItemConfigCycle.ENCHANTED) this.iconDataYesNo.setMessage(Text.of(""));
         else this.iconDataYesNo.setMessage(iconDataBoolean ? ScreenTexts.YES : ScreenTexts.NO);
-
-        //if (itemConfigCycle == ItemConfigCycle.SKULLOWNER && !(iconDataText.getText().length() < 1)) this.iconItem = "player_head";
-
         this.iconDataText.setEditable(itemConfigCycle != ItemConfigCycle.ENCHANTED && typeCycle != TypeCycle.EMPTY);
         this.itemName.setEditable(typeCycle != TypeCycle.EMPTY);
         this.done.active = typeCycle == TypeCycle.EMPTY || !this.itemName.getText().isEmpty();
@@ -226,24 +225,24 @@ public class MineMenuSettingsScreen extends Screen {
 
             case ICON:
                 this.iconItem = this.iconDataText.getText();
+                if (!iconItem.replace("minecraft:", "").equals("player_head")) this.skullowner = "";
                 break;
 
             case SKULLOWNER:
-                if (!iconItem.replace("minecraft:", "").equals("player_head")) this.skullowner = "";
                 this.skullowner = this.iconDataText.getText();
                 break;
         }
     }
 
     private void applySettings() {
-        String name = this.itemName.getText();
-        String data = this.itemData.getText();
-        JsonObject subData = new JsonObject();
+        String nameOut = this.itemName.getText();
+        String dataTextOut = this.itemData.getText();
+        JsonObject subDataOut = new JsonObject();
         skullowner = skullowner.replaceAll("[^a-zA-Z0-9_]", "");
 
         switch (typeCycle) {
             case EMPTY:
-                name = "";
+                nameOut = "";
                 iconItem = "";
                 enchanted = false;
                 skullowner = "";
@@ -252,19 +251,22 @@ public class MineMenuSettingsScreen extends Screen {
             case PRINT:
             case CHATBOX:
             case CLIPBOARD:
-                subData.add("message", new JsonPrimitive(data));
+                subDataOut.add("message", new JsonPrimitive(dataTextOut));
                 break;
 
             case LINK:
-                subData.add("link", new JsonPrimitive(data));
+                subDataOut.add("link", new JsonPrimitive(dataTextOut));
                 break;
 
             case CATEGORY:
-                subData = new JsonObject();
+                if (!this.data.has("link") && !this.data.has("message")) {
+                    subDataOut = this.data.get("data").getAsJsonObject();
+                }
+                GsonUtil.fixEntryAmount(subDataOut);
                 break;
         }
 
-        GsonUtil.saveJson(GsonUtil.template(name, typeCycle.name().toLowerCase(), subData, iconItem, enchanted, skullowner));
+        GsonUtil.saveJson(GsonUtil.template(nameOut, typeCycle.name().toLowerCase(), subDataOut, iconItem, enchanted, skullowner));
         Config.get().minemenuFabric.minemenuData = minemenuData;
         AutoConfig.getConfigHolder(Config.class).save();
     }
