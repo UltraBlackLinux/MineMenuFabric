@@ -239,6 +239,7 @@ public class MineMenuSelectScreen extends Screen {
                 GsonUtil.saveJson(GsonUtil.fixEntryAmount(value.get("data").getAsJsonObject()));
                 client.openScreen(new MineMenuSelectScreen(value.get("data").getAsJsonObject(),
                         value.get("name").getAsString(), this));
+                break;
 
             case "print":
                 client.player.sendChatMessage(value.get("data").getAsJsonObject().get("message").getAsString());
