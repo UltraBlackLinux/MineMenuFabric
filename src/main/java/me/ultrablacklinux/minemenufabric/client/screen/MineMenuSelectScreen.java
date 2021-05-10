@@ -111,6 +111,7 @@ public class MineMenuSelectScreen extends Screen {
                 }
             }
 
+
             int primaryColor;
             try { primaryColor = RandomUtil.getColor(Config.get().minemenuFabric.primaryColor).getColor(); }
             catch (Exception e) { primaryColor = RandomUtil.getColor("#A00000CC").getColor(); }

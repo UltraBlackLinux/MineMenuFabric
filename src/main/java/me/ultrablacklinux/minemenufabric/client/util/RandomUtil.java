@@ -1,11 +1,8 @@
 package me.ultrablacklinux.minemenufabric.client.util;
 
 import com.mojang.authlib.GameProfile;
-import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.math.Color;
 import me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient;
-import me.ultrablacklinux.minemenufabric.client.config.Config;
-import me.ultrablacklinux.minemenufabric.client.screen.MineMenuSelectScreen;
 import me.ultrablacklinux.minemenufabric.client.screen.MineMenuSettingsScreen;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.entity.SkullBlockEntity;
@@ -18,13 +15,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.registry.Registry;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;

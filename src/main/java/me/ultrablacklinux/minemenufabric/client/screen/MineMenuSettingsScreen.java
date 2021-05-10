@@ -73,9 +73,9 @@ public class MineMenuSettingsScreen extends Screen {
 
         this.itemName = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 40, 200, 20,
                 new TranslatableText("minemenu.settings.name"));
+        this.itemName.setMaxLength(32500);
         this.itemName.setText(data.get("name").getAsString());
         this.itemName.setChangedListener(this::updateInput);
-        this.itemName.setMaxLength(32500);
         this.children.add(this.itemName);
 
         this.iconDataText = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 101, 200, 20,
@@ -108,8 +108,6 @@ public class MineMenuSettingsScreen extends Screen {
         this.itemData = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 141, 200, 20, //TEXT INPUT
                 new TranslatableText("minemenu.settings.data"));
 
-        this.readTypes(data);
-
         this.itemData.setMaxLength(32500);
         this.children.add(this.itemData);
 
@@ -128,6 +126,7 @@ public class MineMenuSettingsScreen extends Screen {
         this.done = this.addButton(new ButtonWidget(this.width / 2, 220, 100, 20,
                 ScreenTexts.DONE, (buttonWidget) -> close(false)));
 
+        this.readTypes(data);
         this.updateInput();
     }
 
@@ -240,6 +239,7 @@ public class MineMenuSettingsScreen extends Screen {
         String name = this.itemName.getText();
         String data = this.itemData.getText();
         JsonObject subData = new JsonObject();
+        skullowner = skullowner.replaceAll("[^a-zA-Z0-9_]", "");
 
         switch (typeCycle) {
             case EMPTY:
