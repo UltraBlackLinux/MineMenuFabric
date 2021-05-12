@@ -7,6 +7,7 @@ import net.minecraft.util.Nameable;
 public enum ItemConfigCycle implements Nameable {
     ICON,
     ENCHANTED,
+    CUSTOMMODELDATA,
     SKULLOWNER;
 
     public ItemConfigCycle next() {

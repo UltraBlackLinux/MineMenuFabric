@@ -91,7 +91,7 @@ public class MineMenuSelectScreen extends Screen {
             drawX += (outerPointX + innerPointX) / 2;
             drawY -= (outerPointY + innerPointY) / 2;
 
-            if (value.get("type").getAsString().equals("empty")) { client.getItemRenderer().renderInGui(
+            if (value.get("type").getAsString().equals("empty")) { client.getItemRenderer().renderInGui(  //TODO method here
                     RandomUtil.itemStackFromString(Config.get().minemenuFabric.emptyItemIcon), drawX, drawY);
             }
             else {
@@ -103,10 +103,13 @@ public class MineMenuSelectScreen extends Screen {
                 }
                 else {
                     i = RandomUtil.iconify(iconData.get("iconItem").getAsString(),
-                            iconData.get("enchanted").getAsBoolean(), iconData.get("skullOwner").getAsString());
-                    if (i == null) try {
-                        client.getItemRenderer().renderInGui(playerHeadCache.get(iconData.get("skullOwner").getAsString()), drawX, drawY);
-                    } catch (Exception e) {}
+                            iconData.get("enchanted").getAsBoolean(), iconData.get("skullOwner").getAsString(),
+                            iconData.get("customModelData").getAsInt());
+                    if (i == null) {
+                        try {
+                            client.getItemRenderer().renderInGui(playerHeadCache.get(iconData.get("skullOwner").getAsString()), drawX, drawY);
+                        } catch (Exception e) {}
+                    }
                     else client.getItemRenderer().renderInGui(i, drawX, drawY);
                 }
             }

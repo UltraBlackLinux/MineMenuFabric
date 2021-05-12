@@ -13,11 +13,13 @@ import java.util.Set;
 
 public class GsonUtil {
 
-    public static JsonObject template(String name, String type, JsonObject data, String itemIcon, boolean enchanted, String skullOwner) {
+    public static JsonObject template(String name, String type, JsonObject data, String itemIcon,
+                                      boolean enchanted, String skullOwner, int customModelData) {
         JsonObject icon = new JsonObject();
         icon.add("iconItem", new JsonPrimitive(itemIcon));
         icon.add("enchanted", new JsonPrimitive(enchanted));
         icon.add("skullOwner", new JsonPrimitive(skullOwner));
+        icon.add("customModelData", new JsonPrimitive(customModelData));
 
 
         JsonObject item = new JsonObject();
@@ -29,7 +31,7 @@ public class GsonUtil {
     }
 
     public static JsonObject empty() {
-        return template("", "empty", new JsonObject(), "", false, "");
+        return template("", "empty", new JsonObject(), "", false, "", 0);
     }
 
     public static JsonObject fixEntryAmount(JsonObject j) {

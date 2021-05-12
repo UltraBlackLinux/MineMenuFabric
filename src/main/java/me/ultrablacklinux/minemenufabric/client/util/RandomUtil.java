@@ -36,10 +36,12 @@ public class RandomUtil {
         return Color.ofRGBA(f, f1, f2, f3);
     }
 
-    public static ItemStack iconify(String iconItem, boolean enchanted, String skullowner) {
+    public static ItemStack iconify(String iconItem, boolean enchanted, String skullowner, int customModelData) {
         ItemStack out;
         try {
             out = itemStackFromString(iconItem);
+            CompoundTag customModelTag = out.getOrCreateTag();
+            customModelTag.putInt("CustomModelData", customModelData);
             try {
                 if (enchanted) {
                     Map<Enchantment, Integer> e = new HashMap<>();
@@ -50,13 +52,11 @@ public class RandomUtil {
                 if (!skullowner.equals("") && isSkullItem(out)) {
                     ItemStack finalOut = out;
                     Thread nbTater = new Thread(() -> {
-                        CompoundTag tag = finalOut.getOrCreateTag();
-                        GameProfile gameProfile = new GameProfile((UUID)null, skullowner);
+                        CompoundTag skullTag = finalOut.getOrCreateTag();
+                        GameProfile gameProfile = new GameProfile(null, skullowner);
                         gameProfile = SkullBlockEntity.loadProperties(gameProfile);
-                        tag.put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
+                        skullTag.put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
                         MineMenuFabricClient.playerHeadCache.putIfAbsent(skullowner, finalOut);
-                        //Config.get().minemenuFabric.playerHeadCache = MineMenuFabricClient.playerHeadCache;
-                        //AutoConfig.getConfigHolder(Config.class).save();
                     });
                     nbTater.start();
                     out = null;

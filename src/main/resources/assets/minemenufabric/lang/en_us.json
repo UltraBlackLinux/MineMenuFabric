@@ -23,6 +23,7 @@
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetConfig.@Tooltip": "The Config will reset, once you press done",
   "minemenu.setting.itemconfigcycle.Icon": "Icon",
   "minemenu.setting.itemconfigcycle.Enchanted": "Enchanted",
+  "minemenu.setting.itemconfigcycle.Custommodeldata": "CustomModelData",
   "minemenu.setting.itemconfigcycle.Skullowner": "Skullowner",
   "minemenu.setting.typecycle.Print": "Say",
   "minemenu.setting.typecycle.Clipboard": "Copy to Clipboard",

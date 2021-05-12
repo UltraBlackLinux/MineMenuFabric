@@ -60,7 +60,7 @@ public class MineMenuFabricClient implements ClientModInitializer {
                     try {
                         client.openScreen(new MineMenuSelectScreen(MineMenuFabricClient.minemenuData,
                                 new TranslatableText("minemenu.default.title").getString(), null));
-                    } catch (NullPointerException e) {
+                    } catch (Exception e) {
                         client.openScreen(null);
                         client.player.sendMessage(new TranslatableText("minemenu.error.config"), false);
                     }
