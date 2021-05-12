@@ -19,6 +19,7 @@ public enum ItemConfigCycle implements Nameable {
 
     @Override
     public Text getName() {
-        return new TranslatableText("minemenu.setting.itemconfigcycle." + this.name().substring(0,1) + this.name().substring(1).toLowerCase());
+        return new TranslatableText("minemenu.setting.itemconfigcycle." +
+                this.name().substring(0,1) + this.name().substring(1).toLowerCase());
     }
 }

@@ -34,5 +34,7 @@
   "minemenu.setting.input.name": "Name:",
   "minemenu.setting.input.icon": "Icon:",
   "minemenu.setting.input.text": "Text:",
-  "minemenu.error.config": "§l§c Unbrauchbare Config! Setze sie über das Konfigurationsmenü zurück! \n(Dies kann nach einem Update passieren)"
+  "minemenu.error.config": "§l§c Unbrauchbare Config! Setze sie über das Konfigurationsmenü zurück! \n(Dies kann nach einem Update passieren)",
+  "minemenu.select.copied": "In die Zwischenablage kopiert!",
+  "minemenu.error.link": "Keine URL/URI!"
 }

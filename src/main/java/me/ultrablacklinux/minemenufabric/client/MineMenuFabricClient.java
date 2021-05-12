@@ -4,9 +4,7 @@ import com.google.gson.JsonObject;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.ultrablacklinux.minemenufabric.client.config.Config;
 import me.ultrablacklinux.minemenufabric.client.screen.MineMenuSelectScreen;
-import me.ultrablacklinux.minemenufabric.client.screen.MineMenuSettingsScreen;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
-import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -15,9 +13,9 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 

@@ -17,9 +17,12 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import org.lwjgl.opengl.GL11;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -33,7 +36,7 @@ import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
 
 public class MineMenuSelectScreen extends Screen {
     private final JsonObject jsonItems; //MUST NEVER BE STATIC - WILL BE NULL OTHERWISE
-    private final int circleEntries; //at least 5!
+    private final int circleEntries;
     private final int outerRadius;
     private final int innerRadius;
 
@@ -244,21 +247,31 @@ public class MineMenuSelectScreen extends Screen {
                         value.get("name").getAsString(), this));
                 break;
 
+
             case "print":
-                client.player.sendChatMessage(value.get("data").getAsJsonObject().get("message").getAsString());
+                client.player.sendChatMessage(value.get("data").getAsString());
                 break;
 
             case "chatbox":
                 dontClose = true;
-                client.openScreen(new ChatScreen(value.get("data").getAsJsonObject().get("message").getAsString()));
+                client.openScreen(new ChatScreen(value.get("data").getAsString()));
                 break;
 
             case "clipboard":
-                this.client.keyboard.setClipboard(value.get("data").getAsJsonObject().get("message").getAsString());
+                this.client.keyboard.setClipboard(value.get("data").getAsString());
+                client.player.sendMessage(new TranslatableText("minemenu.select.copied"), true);
                 break;
 
             case "link":
-                Util.getOperatingSystem().open(value.get("data").getAsJsonObject().get("link").getAsString());
+                String link = value.get("data").getAsString();
+                try {
+                    if (!link.startsWith("http")) link = "http://" + link;
+                    new URL(link);
+                    new URI(link);
+                    Util.getOperatingSystem().open(link);
+                } catch (Exception e) {
+                    client.player.sendMessage(new TranslatableText("minemenu.error.link"), true);
+                }
                 break;
         }
         if (!dontClose) this.client.openScreen(null);

@@ -1,6 +1,7 @@
 package me.ultrablacklinux.minemenufabric.client.screen;
 
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -255,7 +256,7 @@ public class MineMenuSettingsScreen extends Screen {
     private void applySettings() {
         String nameOut = this.itemName.getText();
         String dataTextOut = this.itemData.getText();
-        JsonObject subDataOut = new JsonObject();
+        JsonElement subDataOut = new JsonObject();
         skullowner = skullowner.replaceAll("[^a-zA-Z0-9_]", "");
 
         switch (typeCycle) {
@@ -269,18 +270,14 @@ public class MineMenuSettingsScreen extends Screen {
             case PRINT:
             case CHATBOX:
             case CLIPBOARD:
-                subDataOut.add("message", new JsonPrimitive(dataTextOut));
-                break;
-
             case LINK:
-                subDataOut.add("link", new JsonPrimitive(dataTextOut));
+                subDataOut = new JsonPrimitive(dataTextOut);
                 break;
-
             case CATEGORY:
-                if (!this.data.has("link") && !this.data.has("message")) {
-                    subDataOut = this.data.get("data").getAsJsonObject();
+                if (this.data.size() > 1) {
+                    subDataOut = this.data.get("data");
                 }
-                GsonUtil.fixEntryAmount(subDataOut);
+                subDataOut = GsonUtil.fixEntryAmount(subDataOut.getAsJsonObject());
                 break;
         }
 
@@ -294,16 +291,9 @@ public class MineMenuSettingsScreen extends Screen {
         switch (typeCycle) {
             case PRINT:
             case CLIPBOARD:
-            case CHATBOX:
-                try {
-                    this.itemData.setText(data.get("data").getAsJsonObject().get("message").getAsString());
-                } catch (Exception e) {};
-                break;
-
             case LINK:
-                try {
-                    this.itemData.setText(data.get("data").getAsJsonObject().get("link").getAsString()); //TODO change to "data":"link"
-                } catch (Exception e) {};
+            case CHATBOX:
+                this.itemData.setText(data.get("data").getAsString());
                 break;
         }
     }

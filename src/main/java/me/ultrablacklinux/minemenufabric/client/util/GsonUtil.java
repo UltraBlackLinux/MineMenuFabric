@@ -9,11 +9,10 @@ import me.ultrablacklinux.minemenufabric.client.config.Config;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 
 public class GsonUtil {
 
-    public static JsonObject template(String name, String type, JsonObject data, String itemIcon,
+    public static JsonObject template(String name, String type, JsonElement data, String itemIcon,
                                       boolean enchanted, String skullOwner, int customModelData) {
         JsonObject icon = new JsonObject();
         icon.add("iconItem", new JsonPrimitive(itemIcon));
