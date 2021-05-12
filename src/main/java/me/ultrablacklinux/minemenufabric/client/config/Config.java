@@ -30,7 +30,7 @@ public class Config extends PartitioningSerializer.GlobalData {
         @ConfigEntry.Gui.Excluded
         public JsonObject minemenuData = new JsonObject();
 
-        @ConfigEntry.BoundedDiscrete(min = 4, max = 40)
+        @ConfigEntry.BoundedDiscrete(min = 2, max = 40)
         @ConfigEntry.Gui.Tooltip
         public int menuEntries = 5;
 
