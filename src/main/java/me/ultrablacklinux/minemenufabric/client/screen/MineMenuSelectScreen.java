@@ -16,6 +16,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -117,6 +118,9 @@ public class MineMenuSelectScreen extends Screen {
                 }
             }
 
+            String itemName = value.get("name").getAsString().trim();
+            Text itemNameText = new TranslatableText(itemName);
+
 
             int primaryColor;
             try { primaryColor = RandomUtil.getColor(Config.get().minemenuFabric.primaryColor).getColor(); }
@@ -137,8 +141,8 @@ public class MineMenuSelectScreen extends Screen {
                         primaryColor);
 
                 this.client.textRenderer.draw(matrixStack,
-                        value.get("name").getAsString(),
-                        centerX - this.client.textRenderer.getWidth(value.get("name").getAsString()) / 2.0F,
+                        itemNameText,
+                        centerX - this.client.textRenderer.getWidth(itemNameText) / 2.0F,
                         centerY + outerRadius + 10,
                         0xFFFFFF);
             } else {
