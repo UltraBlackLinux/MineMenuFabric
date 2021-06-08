@@ -24,7 +24,6 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Util;
 
 import java.util.ArrayList;
 
@@ -33,12 +32,12 @@ import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
 @SuppressWarnings("ALL")
 public class MineMenuSettingsScreen extends Screen {
     private TypeCycle typeCycle;
-    private ItemConfigCycle itemConfigCycle;
+    private ItemConfigCycle iconConfigCycle;
 
     private TextFieldWidget itemName;
     private TextFieldWidget iconDataText;
     private TextFieldWidget itemData;
-    private ButtonWidget itemSettingType;
+    private ButtonWidget iconSettingType;
     private ButtonWidget type;
 
     private ButtonWidget keyBindButton;
@@ -62,7 +61,7 @@ public class MineMenuSettingsScreen extends Screen {
         this.parent = parent;
         MineMenuFabricClient.datapath = datapath; //TODO fuck this
 
-        itemConfigCycle = ItemConfigCycle.ICON;
+        iconConfigCycle = ItemConfigCycle.ICON;
 
         data = minemenuData;
         for (String s : datapath) {
@@ -96,21 +95,21 @@ public class MineMenuSettingsScreen extends Screen {
         this.children.add(this.iconDataText);
 
         this.iconDataYesNo = this.addButton(
-                new ButtonWidget(this.width / 2 + 1, 80, 101, 20, Text.of(""), (buttonWidget) -> {
+                new ButtonWidget(this.width / 2 - 100, 101, 200, 20, Text.of(""), (buttonWidget) -> {
                     this.iconDataBoolean = !iconDataBoolean;
                     this.saveIconVariable();
                     this.updateInput();
         }));
 
-        this.itemSettingType = this.addButton(new ButtonWidget(this.width / 2 - 101, 80, 102,
-                20, itemConfigCycle.getName(), (buttonWidget) -> {
+        this.iconSettingType = this.addButton(new ButtonWidget(this.width / 2 - 100, 80, 200,
+                20, iconConfigCycle.getName(), (buttonWidget) -> {
             this.saveIconVariable();
-            itemConfigCycle = itemConfigCycle.next();
-            if (itemConfigCycle == ItemConfigCycle.SKULLOWNER &&
+            iconConfigCycle = iconConfigCycle.next();
+            if (iconConfigCycle == ItemConfigCycle.SKULLOWNER &&
                     !this.iconItem.replace("minecraft:", "").equals("player_head")) {
-                itemConfigCycle = itemConfigCycle.next();
+                iconConfigCycle = iconConfigCycle.next();
             }
-            this.itemSettingType.setMessage(itemConfigCycle.getName());
+            this.iconSettingType.setMessage(iconConfigCycle.getName());
             this.updateInput();
         }));
 
@@ -149,10 +148,23 @@ public class MineMenuSettingsScreen extends Screen {
     }
 
     private void updateInput() {
-        this.iconDataText.setEditable(itemConfigCycle != ItemConfigCycle.ENCHANTED && typeCycle != TypeCycle.EMPTY);
-        iconDataBoolean = false;
+        this.iconDataText.setEditable(iconConfigCycle != ItemConfigCycle.ENCHANTED && typeCycle != TypeCycle.EMPTY);
 
-        switch (itemConfigCycle) {
+        if (typeCycle != TypeCycle.EMPTY) {
+            if (iconConfigCycle == iconConfigCycle.ENCHANTED) {
+                this.iconDataYesNo.visible = true;
+                this.iconDataText.visible = false;
+            }
+            else {
+                this.iconDataYesNo.visible = false;
+                this.iconDataText.visible = true;
+            }
+        }
+        else {
+            this.iconDataYesNo.visible = false;
+        }
+
+        switch (iconConfigCycle) {
             case ICON:
                 this.iconDataText.setText(this.iconItem);
                 break;
@@ -197,10 +209,10 @@ public class MineMenuSettingsScreen extends Screen {
                 break;
         }
 
-        this.itemSettingType.active = typeCycle != TypeCycle.EMPTY;
+        this.iconSettingType.active = typeCycle != TypeCycle.EMPTY;
 
-        this.iconDataYesNo.active = itemConfigCycle == ItemConfigCycle.ENCHANTED;
-        if (itemConfigCycle != ItemConfigCycle.ENCHANTED) this.iconDataYesNo.setMessage(Text.of(""));
+        this.iconDataYesNo.active = iconConfigCycle == ItemConfigCycle.ENCHANTED;
+        if (iconConfigCycle != ItemConfigCycle.ENCHANTED) this.iconDataYesNo.setMessage(Text.of(""));
         else this.iconDataYesNo.setMessage(iconDataBoolean ? ScreenTexts.YES : ScreenTexts.NO);
         this.itemName.setEditable(typeCycle != TypeCycle.EMPTY);
         this.done.active = typeCycle == TypeCycle.EMPTY || !this.itemName.getText().isEmpty();
@@ -265,7 +277,7 @@ public class MineMenuSettingsScreen extends Screen {
                         new TranslatableText("minemenu.setting.input.text"),
                 this.width / 2 - 100, 131, 0xFFa0a0a0);
         this.itemName.render(matrices, mouseX, mouseY, delta);
-        if (itemConfigCycle != ItemConfigCycle.ENCHANTED) this.iconDataText.render(matrices, mouseX, mouseY, delta);
+        if (iconConfigCycle != ItemConfigCycle.ENCHANTED) this.iconDataText.render(matrices, mouseX, mouseY, delta);
         this.iconDataYesNo.render(matrices, mouseX, mouseY, delta);
         this.itemData.render(matrices, mouseX, mouseY, delta);
 
@@ -294,7 +306,7 @@ public class MineMenuSettingsScreen extends Screen {
     }
 
     private void saveIconVariable() {
-        switch (itemConfigCycle) {
+        switch (iconConfigCycle) {
             case ENCHANTED:
                 this.enchanted = this.iconDataBoolean;
                 break;
