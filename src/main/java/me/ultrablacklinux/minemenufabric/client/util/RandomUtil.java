@@ -36,6 +36,7 @@ public class RandomUtil {
         return Color.ofRGBA(f, f1, f2, f3);
     }
 
+    @SuppressWarnings("ConstantConditions")
     public static ItemStack iconify(String iconItem, boolean enchanted, String skullowner, int customModelData) {
         ItemStack out;
         try {
@@ -86,6 +87,7 @@ public class RandomUtil {
             client.openScreen(new MineMenuSettingsScreen(parent, datapath));
         } catch (NullPointerException e) {
             client.openScreen(null);
+            assert client.player != null;
             client.player.sendMessage(new TranslatableText("minemenu.error.config"), false);
         }
     }

@@ -10,13 +10,15 @@ import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
 import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -31,12 +33,12 @@ import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
 
 
 /**
- * The actual menu rendering is by FlashyReese
+ * The original menu was by FlashyReese
  */
 
-
+@SuppressWarnings("ConstantConditions")
 public class MineMenuSelectScreen extends Screen {
-    private final JsonObject jsonItems; //MUST NEVER BE STATIC - WILL BE NULL OTHERWISE
+    private final JsonObject jsonItems; //MUST NEVER BE STATIC - WILL BE NULL OTHERWISE TODO try to use instance
     private final int circleEntries;
     private final int outerRadius;
     private final int innerRadius;
@@ -205,6 +207,20 @@ public class MineMenuSelectScreen extends Screen {
         return false;
     }
 
+    /*public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (client.currentScreen instanceof MineMenuSelectScreen) {
+            client.player.input.pressingForward = InputUtil.isKeyPressed(client.getWindow().getHandle(), 87);
+            client.player.input.pressingBack = InputUtil.isKeyPressed(client.getWindow().getHandle(), 83);
+            client.player.input.pressingLeft = InputUtil.isKeyPressed(client.getWindow().getHandle(), 65);
+            client.player.input.pressingRight = InputUtil.isKeyPressed(client.getWindow().getHandle(), 68);
+            client.player.input.jumping = InputUtil.isKeyPressed(client.getWindow().getHandle(), 32);
+            client.player.input.sneaking = InputUtil.isKeyPressed(client.getWindow().getHandle(), 340);
+            return true;
+
+        }
+        else return super.keyPressed(keyCode, scanCode, modifiers);
+    }*/
+
 
     public void drawDoughnutSegment(MatrixStack matrixStack, int startingAngle, int endingAngle, float centerX,
                                     float centerY, double outerRingRadius, double innerRingRadius, int color) {
@@ -236,15 +252,12 @@ public class MineMenuSelectScreen extends Screen {
     }
 
     private void handleTypes(JsonObject value) {
-        boolean dontClose = false;
         switch (value.get("type").getAsString()) {
             case "empty":
-                dontClose = true;
                 RandomUtil.openConfigScreen(this);
                 break;
 
             case "category":
-                dontClose = true;
                 datapath.add("data");
                 GsonUtil.saveJson(GsonUtil.fixEntryAmount(value.get("data").getAsJsonObject()));
                 client.openScreen(new MineMenuSelectScreen(value.get("data").getAsJsonObject(),
@@ -254,16 +267,29 @@ public class MineMenuSelectScreen extends Screen {
 
             case "print":
                 client.player.sendChatMessage(value.get("data").getAsString());
+                this.client.openScreen(null);
                 break;
 
             case "chatbox":
-                dontClose = true;
                 client.openScreen(new ChatScreen(value.get("data").getAsString()));
                 break;
 
             case "clipboard":
                 this.client.keyboard.setClipboard(value.get("data").getAsString());
                 client.player.sendMessage(new TranslatableText("minemenu.select.copied"), true);
+                this.client.openScreen(null);
+                break;
+
+            case "keybinding":
+                if (client.currentScreen instanceof MineMenuSelectScreen) this.client.openScreen(null);
+                InputUtil.Key key = InputUtil.fromTranslationKey(value.get("data").getAsString());
+                KeyBinding.setKeyPressed(key, true);
+                /*Thread press = new Thread(() -> {
+                    KeyBinding.setKeyPressed(key, true);
+                    try { Thread.sleep(2000); } catch (InterruptedException e) { e.printStackTrace(); }
+                    KeyBinding.setKeyPressed(key, false);
+                });
+                press.start();*/
                 break;
 
             case "link":
@@ -278,6 +304,5 @@ public class MineMenuSelectScreen extends Screen {
                 }
                 break;
         }
-        if (!dontClose) this.client.openScreen(null);
     }
 }

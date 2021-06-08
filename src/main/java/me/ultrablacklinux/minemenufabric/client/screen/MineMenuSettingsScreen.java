@@ -16,31 +16,43 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
 
 import java.util.ArrayList;
 
 import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
 
+@SuppressWarnings("ALL")
 public class MineMenuSettingsScreen extends Screen {
     private TypeCycle typeCycle;
     private ItemConfigCycle itemConfigCycle;
-    private ButtonWidget done;
+
     private TextFieldWidget itemName;
-    private ButtonWidget itemSettingType;
-    private TextFieldWidget itemData;
-    private ButtonWidget type;
     private TextFieldWidget iconDataText;
+    private TextFieldWidget itemData;
+    private ButtonWidget itemSettingType;
+    private ButtonWidget type;
+
+    private ButtonWidget keyBindButton;
+    private boolean keyBindButtonActive = false;
+    private InputUtil.Key buttonKeyBinding = InputUtil.UNKNOWN_KEY;
+
+    private String iconItem;
+    private String skullowner;
+    private boolean iconDataBoolean = false;
+    private boolean enchanted;
+    private int customModelData;
     private ButtonWidget iconDataYesNo;
 
-    private boolean iconDataBoolean;
-    private String iconItem;
-    private boolean enchanted;
-    private String skullowner;
-    private int customModelData;
+    private ButtonWidget done;
 
     private final Screen parent;
     JsonObject data;
@@ -57,13 +69,7 @@ public class MineMenuSettingsScreen extends Screen {
             data = data.get(s).getAsJsonObject();
         }
 
-        JsonObject iconData = data.get("icon").getAsJsonObject();
-        this.skullowner = iconData.get("skullOwner").getAsString();
-        this.enchanted = iconData.get("enchanted").getAsBoolean();
-        this.iconItem = iconData.get("iconItem").getAsString();
-        this.customModelData = iconData.get("customModelData").getAsInt();
-        this.iconDataBoolean = false;
-        typeCycle = TypeCycle.valueOf(data.get("type").getAsString().toUpperCase());
+        this.readTypes(data);
     }
 
     public void tick() {
@@ -73,6 +79,7 @@ public class MineMenuSettingsScreen extends Screen {
     }
 
     protected void init() {
+
         this.client.keyboard.setRepeatEvents(true);
 
         this.itemName = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 40, 200, 20,
@@ -114,6 +121,15 @@ public class MineMenuSettingsScreen extends Screen {
         this.itemData.setMaxLength(32500);
         this.children.add(this.itemData);
 
+        this.keyBindButton = this.addButton(new ButtonWidget(this.width / 2 - 100, 141, 200, 20,
+                InputUtil.UNKNOWN_KEY.getLocalizedText(), (buttonWidget) -> {
+            this.keyBindButtonActive = !this.keyBindButtonActive;
+            this.updateInput();
+            if (keyBindButtonActive) this.keyBindButton.setMessage((new LiteralText("> "))
+                    .append(this.keyBindButton.getMessage().shallowCopy().formatted(Formatting.YELLOW))
+                    .append(" <").formatted(Formatting.YELLOW)); //Definitely not stolen from minecraft's code
+        }));
+
         this.type = this.addButton(new ButtonWidget(this.width / 2 - 100, 180, 200, //TYPE
                 20, typeCycle.getName(), (buttonWidget) -> {
             typeCycle = typeCycle.next();
@@ -129,7 +145,6 @@ public class MineMenuSettingsScreen extends Screen {
         this.done = this.addButton(new ButtonWidget(this.width / 2, 220, 100, 20,
                 ScreenTexts.DONE, (buttonWidget) -> close(false)));
 
-        this.readTypes(data);
         this.updateInput();
     }
 
@@ -155,12 +170,26 @@ public class MineMenuSettingsScreen extends Screen {
                 break;
         }
 
+        if (typeCycle == TypeCycle.KEYBINDING) {
+            this.keyBindButton.visible = true;
+            this.itemData.visible = false;
+        }
+        else {
+            this.keyBindButton.visible = false;
+            this.itemData.visible = true;
+        }
+
         switch(typeCycle) {
             case PRINT:
             case LINK:
             case CLIPBOARD:
             case CHATBOX:
                 this.itemData.setEditable(true);
+                break;
+
+            case KEYBINDING:
+                this.itemData.setEditable(false);
+                this.keyBindButton.setMessage(this.buttonKeyBinding.getLocalizedText());
                 break;
 
             default:
@@ -175,6 +204,37 @@ public class MineMenuSettingsScreen extends Screen {
         else this.iconDataYesNo.setMessage(iconDataBoolean ? ScreenTexts.YES : ScreenTexts.NO);
         this.itemName.setEditable(typeCycle != TypeCycle.EMPTY);
         this.done.active = typeCycle == TypeCycle.EMPTY || !this.itemName.getText().isEmpty();
+    }
+
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (this.keyBindButtonActive) {
+            this.handleKeys(keyCode, scanCode, modifiers, false);
+            return true;
+        }
+        else return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (this.keyBindButtonActive) {
+            this.handleKeys(button, 0, 0, true);
+            return true;
+        }
+        else return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    private void handleKeys(int keyCode, int scanCode, int modifiers, boolean mouse) {
+        if (mouse) {
+            this.buttonKeyBinding = InputUtil.Type.MOUSE.createFromCode(keyCode);
+            //TODO fix button staying active after detecting press when using a mouse
+        }
+        else {
+            if (keyCode == 256) this.buttonKeyBinding = InputUtil.UNKNOWN_KEY;
+            else this.buttonKeyBinding = InputUtil.fromKeyCode(keyCode, scanCode);
+        }
+
+        this.keyBindButtonActive = false;
+        KeyBinding.updateKeysByCode();
+        this.updateInput();
     }
 
     private void saveIconVariable(String s) {
@@ -200,7 +260,9 @@ public class MineMenuSettingsScreen extends Screen {
                 this.width / 2 - 100, 30, 0xFFa0a0a0);
         drawTextWithShadow(matrices, this.textRenderer, new TranslatableText("minemenu.setting.input.icon"),
                 this.width / 2 - 100, 70, 0xFFa0a0a0);
-        drawTextWithShadow(matrices, this.textRenderer, new TranslatableText("minemenu.setting.input.text"),
+        drawTextWithShadow(matrices, this.textRenderer, this.keyBindButton.visible ?
+                        new TranslatableText("minemenu.setting.input.key") :
+                        new TranslatableText("minemenu.setting.input.text"),
                 this.width / 2 - 100, 131, 0xFFa0a0a0);
         this.itemName.render(matrices, mouseX, mouseY, delta);
         if (itemConfigCycle != ItemConfigCycle.ENCHANTED) this.iconDataText.render(matrices, mouseX, mouseY, delta);
@@ -256,6 +318,7 @@ public class MineMenuSettingsScreen extends Screen {
     private void applySettings() {
         String nameOut = this.itemName.getText();
         String dataTextOut = this.itemData.getText();
+        String dataKeybinding = this.buttonKeyBinding.getTranslationKey();
         JsonElement subDataOut = new JsonObject();
         skullowner = skullowner.replaceAll("[^a-zA-Z0-9_]", "");
 
@@ -273,6 +336,11 @@ public class MineMenuSettingsScreen extends Screen {
             case LINK:
                 subDataOut = new JsonPrimitive(dataTextOut);
                 break;
+
+            case KEYBINDING:
+                subDataOut = new JsonPrimitive(dataKeybinding);
+                break;
+
             case CATEGORY:
                 if (this.data.size() > 1) {
                     subDataOut = this.data.get("data");
@@ -288,6 +356,13 @@ public class MineMenuSettingsScreen extends Screen {
     }
 
     private void readTypes(JsonObject data) {
+        JsonObject iconData = data.get("icon").getAsJsonObject();
+        this.skullowner = iconData.get("skullOwner").getAsString();
+        this.enchanted = iconData.get("enchanted").getAsBoolean();
+        this.iconItem = iconData.get("iconItem").getAsString();
+        this.customModelData = iconData.get("customModelData").getAsInt();
+        typeCycle = TypeCycle.valueOf(data.get("type").getAsString().toUpperCase());
+
         switch (typeCycle) {
             case PRINT:
             case CLIPBOARD:
@@ -295,6 +370,9 @@ public class MineMenuSettingsScreen extends Screen {
             case CHATBOX:
                 this.itemData.setText(data.get("data").getAsString());
                 break;
+
+            case KEYBINDING:
+                this.buttonKeyBinding = InputUtil.fromTranslationKey(data.get("data").getAsString());
         }
     }
 }

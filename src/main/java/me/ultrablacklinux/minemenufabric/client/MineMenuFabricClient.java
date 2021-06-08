@@ -27,6 +27,8 @@ public class MineMenuFabricClient implements ClientModInitializer {
     public static ArrayList<String> datapath;
     public static HashMap<String, ItemStack> playerHeadCache = new HashMap<>();
 
+    public final MineMenuFabricClient INSTANCE = this;
+
     @Override
     public void onInitializeClient() {
         Config.init();
@@ -49,23 +51,27 @@ public class MineMenuFabricClient implements ClientModInitializer {
             }
 
             if (mineMenuSelectScreen != null) this.mineMenuSelectScreen.tick();
-        });
 
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (keyBinding.wasPressed()) {
                 if (!(client.currentScreen instanceof MineMenuSelectScreen)) {
-                    minemenuData = GsonUtil.fixEntryAmount(minemenuData); //it is not already assigned dumb intelli
+                    //noinspection ConstantConditions
+                    minemenuData = GsonUtil.fixEntryAmount(minemenuData);
                     try {
                         client.openScreen(new MineMenuSelectScreen(MineMenuFabricClient.minemenuData,
                                 new TranslatableText("minemenu.default.title").getString(), null));
                     } catch (Exception e) {
                         client.openScreen(null);
+                        assert client.player != null;
                         client.player.sendMessage(new TranslatableText("minemenu.error.config"), false);
                     }
 
                 }
             }
         });
+    }
+
+    public final MineMenuFabricClient getInstance() {
+        return INSTANCE;
     }
 }
 

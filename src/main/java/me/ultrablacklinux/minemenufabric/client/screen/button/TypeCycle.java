@@ -9,6 +9,7 @@ public enum TypeCycle implements Nameable {
     CHATBOX,
     CLIPBOARD,
     LINK,
+    KEYBINDING,
 
     CATEGORY,
     EMPTY;
