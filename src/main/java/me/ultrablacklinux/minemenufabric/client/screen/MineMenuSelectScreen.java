@@ -283,13 +283,12 @@ public class MineMenuSelectScreen extends Screen {
             case "keybinding":
                 if (client.currentScreen instanceof MineMenuSelectScreen) this.client.openScreen(null);
                 InputUtil.Key key = InputUtil.fromTranslationKey(value.get("data").getAsString());
-                KeyBinding.setKeyPressed(key, true);
-                /*Thread press = new Thread(() -> {
+                Thread press = new Thread(() -> {
                     KeyBinding.setKeyPressed(key, true);
-                    try { Thread.sleep(2000); } catch (InterruptedException e) { e.printStackTrace(); }
+                    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
                     KeyBinding.setKeyPressed(key, false);
                 });
-                press.start();*/
+                press.start();
                 break;
 
             case "link":
