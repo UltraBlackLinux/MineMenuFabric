@@ -7,6 +7,7 @@
 #TODO
 - Automatic config fixer - updates
 - Keybind toggle/press
+- Get Instances to work
 
 #Abandoned
 - toggle keybind - You can't press a key, while in a gui

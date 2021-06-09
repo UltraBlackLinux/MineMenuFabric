@@ -36,6 +36,7 @@
   "minemenu.setting.input.icon": "Icon:",
   "minemenu.setting.input.text": "Text:",
   "minemenu.setting.input.key": "Key:",
+  "minemenu.setting.input.key.delay": "Release Delay: %sms",
   "minemenu.error.config": "§l§c Invalid config! Reset it via the config menu! \n(This may happen after an update)",
   "minemenu.select.copied": "Copied to clipboard!",
   "minemenu.error.link": "Not a valid URL/URI!"

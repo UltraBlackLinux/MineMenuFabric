@@ -24,10 +24,11 @@ public class MineMenuFabricClient implements ClientModInitializer {
     MineMenuSelectScreen mineMenuSelectScreen;
     public static KeyBinding keyBinding;
     public static JsonObject minemenuData;
+    public static JsonObject levelData;
     public static ArrayList<String> datapath;
     public static HashMap<String, ItemStack> playerHeadCache = new HashMap<>();
 
-    public final MineMenuFabricClient INSTANCE = this;
+   //private final MineMenuFabricClient INSTANCE = new MineMenuFabricClient();
 
     @Override
     public void onInitializeClient() {
@@ -70,8 +71,6 @@ public class MineMenuFabricClient implements ClientModInitializer {
         });
     }
 
-    public final MineMenuFabricClient getInstance() {
-        return INSTANCE;
-    }
+    //public static MineMenuFabricClient getInstance() { return INSTANCE;}
 }
 

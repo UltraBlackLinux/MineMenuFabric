@@ -10,7 +10,6 @@ import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
 import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -38,13 +37,15 @@ import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
 
 @SuppressWarnings("ConstantConditions")
 public class MineMenuSelectScreen extends Screen {
-    private final JsonObject jsonItems; //MUST NEVER BE STATIC - WILL BE NULL OTHERWISE TODO try to use instance
+    private final JsonObject jsonItems; //MUST NEVER BE STATIC - WILL BE NULL OTHERWISE
     private final int circleEntries;
     private final int outerRadius;
     private final int innerRadius;
 
     public MineMenuSelectScreen(JsonObject menuData, String menuTitle, Screen parent) {
         super(Text.of(menuTitle));
+
+
         this.jsonItems = menuData;
 
         if (parent == null) datapath = new ArrayList<>();
@@ -97,7 +98,7 @@ public class MineMenuSelectScreen extends Screen {
             drawX += (outerPointX + innerPointX) / 2;
             drawY -= (outerPointY + innerPointY) / 2;
 
-            if (value.get("type").getAsString().equals("empty")) { client.getItemRenderer().renderInGui(  //TODO method here
+            if (value.get("type").getAsString().equals("empty")) { client.getItemRenderer().renderInGui(
                     RandomUtil.itemStackFromString(Config.get().minemenuFabric.emptyItemIcon), drawX, drawY);
             }
             else {
@@ -282,10 +283,11 @@ public class MineMenuSelectScreen extends Screen {
 
             case "keybinding":
                 if (client.currentScreen instanceof MineMenuSelectScreen) this.client.openScreen(null);
-                InputUtil.Key key = InputUtil.fromTranslationKey(value.get("data").getAsString());
+                InputUtil.Key key = InputUtil.fromTranslationKey(value.get("data").getAsJsonObject().get("key").getAsString());
+                int releaseDelay = value.get("data").getAsJsonObject().get("releaseDelay").getAsInt();
                 Thread press = new Thread(() -> {
                     KeyBinding.setKeyPressed(key, true);
-                    try { Thread.sleep(50); } catch (InterruptedException e) { e.printStackTrace(); }
+                    try { Thread.sleep(releaseDelay); } catch (InterruptedException e) { e.printStackTrace(); }
                     KeyBinding.setKeyPressed(key, false);
                 });
                 press.start();

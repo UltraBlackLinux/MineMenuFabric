@@ -14,7 +14,9 @@ import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.client.gui.screen.ingame.JigsawBlockScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
@@ -24,6 +26,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.ArrayList;
 
@@ -43,6 +46,8 @@ public class MineMenuSettingsScreen extends Screen {
     private ButtonWidget keyBindButton;
     private boolean keyBindButtonActive = false;
     private InputUtil.Key buttonKeyBinding = InputUtil.UNKNOWN_KEY;
+    private SliderWidget keyBindreleaseSlider;
+    private int keyBindReleaseTime;
 
     private String iconItem;
     private String skullowner;
@@ -50,6 +55,7 @@ public class MineMenuSettingsScreen extends Screen {
     private boolean enchanted;
     private int customModelData;
     private ButtonWidget iconDataYesNo;
+
 
     private ButtonWidget done;
 
@@ -78,8 +84,9 @@ public class MineMenuSettingsScreen extends Screen {
     }
 
     protected void init() {
-
         this.client.keyboard.setRepeatEvents(true);
+
+        //---------------------------- NAME INPUT
 
         this.itemName = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 40, 200, 20,
                 new TranslatableText("minemenu.settings.name"));
@@ -87,6 +94,8 @@ public class MineMenuSettingsScreen extends Screen {
         this.itemName.setText(data.get("name").getAsString());
         this.itemName.setChangedListener(this::updateInput);
         this.children.add(this.itemName);
+
+        //---------------------------- ICON INPUT
 
         this.iconDataText = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 101, 200, 20,
                         new TranslatableText("minemenu.settings.icon.data"));
@@ -113,14 +122,14 @@ public class MineMenuSettingsScreen extends Screen {
             this.updateInput();
         }));
 
-        //----------------------------
+        //---------------------------- DATA INIPUT/TYPE
 
-        this.itemData = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 141, 200, 20, //TEXT INPUT
+        this.itemData = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 141, 200, 20,
                 new TranslatableText("minemenu.settings.data"));
         this.itemData.setMaxLength(32500);
         this.children.add(this.itemData);
 
-        this.keyBindButton = this.addButton(new ButtonWidget(this.width / 2 - 100, 141, 200, 20,
+        this.keyBindButton = this.addButton(new ButtonWidget(this.width / 2 - 100, 140, 200, 20,
                 InputUtil.UNKNOWN_KEY.getLocalizedText(), (buttonWidget) -> {
             this.keyBindButtonActive = !this.keyBindButtonActive;
             this.updateInput();
@@ -129,16 +138,32 @@ public class MineMenuSettingsScreen extends Screen {
                     .append(" <").formatted(Formatting.YELLOW)); //Definitely not stolen from minecraft's code
         }));
 
-        this.type = this.addButton(new ButtonWidget(this.width / 2 - 100, 180, 200, //TYPE
+        this.keyBindreleaseSlider = this.addButton(new SliderWidget(this.width / 2 - 100, 160, 200, 20, LiteralText.EMPTY, 0.0D) {
+            { //hippedy, hoppedy, your code is now my property
+                this.updateMessage();
+            }
+
+            protected void updateMessage() {
+                this.setMessage(new TranslatableText("minemenu.setting.input.key.delay",
+                        MineMenuSettingsScreen.this.keyBindReleaseTime));
+            }
+
+            protected void applyValue() {
+                MineMenuSettingsScreen.this.keyBindReleaseTime
+                        = MathHelper.floor(MathHelper.clampedLerp(0, 25000, this.value));
+            }
+        });
+
+        this.type = this.addButton(new ButtonWidget(this.width / 2 - 100, 180, 200,
                 20, typeCycle.getName(), (buttonWidget) -> {
             typeCycle = typeCycle.next();
             this.type.setMessage(typeCycle.getName());
             this.updateInput();
         }));
 
-        //----------------------------
+        //---------------------------- DONE CANCEL
 
-        this.addButton(new ButtonWidget(this.width / 2 - 100, 220, 100, 20, //DONE CANCEL
+        this.addButton(new ButtonWidget(this.width / 2 - 100, 220, 100, 20,
                 ScreenTexts.CANCEL, (buttonWidget) -> close(true)));
 
         this.done = this.addButton(new ButtonWidget(this.width / 2, 220, 100, 20,
@@ -184,10 +209,12 @@ public class MineMenuSettingsScreen extends Screen {
 
         if (typeCycle == TypeCycle.KEYBINDING) {
             this.keyBindButton.visible = true;
+            this.keyBindreleaseSlider.visible = true;
             this.itemData.visible = false;
         }
         else {
             this.keyBindButton.visible = false;
+            this.keyBindreleaseSlider.visible = false;
             this.itemData.visible = true;
         }
 
@@ -350,7 +377,8 @@ public class MineMenuSettingsScreen extends Screen {
                 break;
 
             case KEYBINDING:
-                subDataOut = new JsonPrimitive(dataKeybinding);
+                subDataOut.getAsJsonObject().add("key", new JsonPrimitive(dataKeybinding));
+                subDataOut.getAsJsonObject().add("releaseDelay", new JsonPrimitive(keyBindReleaseTime));
                 break;
 
             case CATEGORY:
@@ -384,7 +412,8 @@ public class MineMenuSettingsScreen extends Screen {
                 break;
 
             case KEYBINDING:
-                this.buttonKeyBinding = InputUtil.fromTranslationKey(data.get("data").getAsString());
+                this.buttonKeyBinding = InputUtil.fromTranslationKey(data.get("data").getAsJsonObject().get("key").getAsString());
+                this.keyBindReleaseTime = data.get("data").getAsJsonObject().get("releaseDelay").getAsInt();
         }
     }
 }
