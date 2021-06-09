@@ -34,7 +34,7 @@ import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
 
 @SuppressWarnings("ALL")
 public class MineMenuSettingsScreen extends Screen {
-    private TypeCycle typeCycle;
+    private TypeCycle typeCycle = TypeCycle.EMPTY;
     private ItemConfigCycle iconConfigCycle;
 
     private TextFieldWidget itemName;
@@ -56,11 +56,11 @@ public class MineMenuSettingsScreen extends Screen {
     private int customModelData;
     private ButtonWidget iconDataYesNo;
 
-
     private ButtonWidget done;
 
     private final Screen parent;
     JsonObject data;
+    private boolean firstRun = true;
 
     public MineMenuSettingsScreen(Screen parent, ArrayList<String> datapath) {
         super(new TranslatableText("minemenu.settings.title"));
@@ -73,8 +73,6 @@ public class MineMenuSettingsScreen extends Screen {
         for (String s : datapath) {
             data = data.get(s).getAsJsonObject();
         }
-
-        this.readTypes(data);
     }
 
     public void tick() {
@@ -168,6 +166,13 @@ public class MineMenuSettingsScreen extends Screen {
 
         this.done = this.addButton(new ButtonWidget(this.width / 2, 220, 100, 20,
                 ScreenTexts.DONE, (buttonWidget) -> close(false)));
+
+
+        if (firstRun) {
+            this.readTypes(data);
+            this.type.setMessage(typeCycle.getName());
+            firstRun = false;
+        }
 
         this.updateInput();
     }
@@ -414,6 +419,7 @@ public class MineMenuSettingsScreen extends Screen {
             case KEYBINDING:
                 this.buttonKeyBinding = InputUtil.fromTranslationKey(data.get("data").getAsJsonObject().get("key").getAsString());
                 this.keyBindReleaseTime = data.get("data").getAsJsonObject().get("releaseDelay").getAsInt();
+                break;
         }
     }
 }

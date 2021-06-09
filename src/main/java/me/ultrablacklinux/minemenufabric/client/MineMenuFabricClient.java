@@ -28,7 +28,6 @@ public class MineMenuFabricClient implements ClientModInitializer {
     public static ArrayList<String> datapath;
     public static HashMap<String, ItemStack> playerHeadCache = new HashMap<>();
 
-   //private final MineMenuFabricClient INSTANCE = new MineMenuFabricClient();
 
     @Override
     public void onInitializeClient() {
@@ -70,7 +69,5 @@ public class MineMenuFabricClient implements ClientModInitializer {
             }
         });
     }
-
-    //public static MineMenuFabricClient getInstance() { return INSTANCE;}
 }
 

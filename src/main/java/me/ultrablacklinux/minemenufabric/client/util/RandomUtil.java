@@ -86,6 +86,7 @@ public class RandomUtil {
         try {
             client.openScreen(new MineMenuSettingsScreen(parent, datapath));
         } catch (NullPointerException e) {
+            e.printStackTrace();
             client.openScreen(null);
             assert client.player != null;
             client.player.sendMessage(new TranslatableText("minemenu.error.config"), false);
