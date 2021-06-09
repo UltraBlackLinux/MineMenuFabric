@@ -4,7 +4,7 @@
 <a href="https://www.curseforge.com/minecraft/mc-mods/fabric-api"> <img src="https://i.imgur.com/Ol1Tcf8.png" width="171.8" height="57,6"> </a>
 
 # MineMenuFabric
-###Minemenu, but for Fabric
+**Minemenu, but for Fabric**
 
 Note: This project doesn't have anything to do with Girafi's Minemenu, This is only a fabric port!
 
