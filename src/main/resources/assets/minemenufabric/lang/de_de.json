@@ -36,6 +36,7 @@
   "minemenu.setting.input.icon": "Icon:",
   "minemenu.setting.input.text": "Text:",
   "minemenu.setting.input.key": "Taste:",
+  "minemenu.setting.input.key.delay": "Loslass Wartezeit: %sms",
   "minemenu.error.config": "§l§c Unbrauchbare Config! Setze sie über das Konfigurationsmenü zurück! \n(Dies kann nach einem Update passieren)",
   "minemenu.select.copied": "In die Zwischenablage kopiert!",
   "minemenu.error.link": "Keine URL/URI!"
