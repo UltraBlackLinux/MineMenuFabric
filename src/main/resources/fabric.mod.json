@@ -7,9 +7,14 @@
   "authors": [
     "UltraBlackLinux"
   ],
+  "contributors": [
+    "Quentiiiin",
+    "Mari023",
+    "Redo11"
+  ],
   "contact": {
-    "website": "https://github.com/UltraBlackLinux/MineMenuFabric",
-    "repo": "https://github.com/UltraBlackLinux/MineMenuFabric/issues"
+    "website": "https://modrinth.com/mod/minemenufabric",
+    "issues": "https://github.com/UltraBlackLinux/MineMenuFabric/issues"
   },
   "license": "MIT",
   "icon": "assets/minemenufabric/icon.png",

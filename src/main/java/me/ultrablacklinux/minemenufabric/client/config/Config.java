@@ -50,6 +50,12 @@ public class Config extends PartitioningSerializer.GlobalData {
         public String emptyItemIcon = "minecraft:air";
 
         @ConfigEntry.Gui.Tooltip
+        public boolean showTips = true;
+
+        @ConfigEntry.Gui.Tooltip
+        public boolean repeatButton = true;
+
+        @ConfigEntry.Gui.Tooltip
         public boolean resetHeadCache = false;
 
         @ConfigEntry.Gui.Tooltip

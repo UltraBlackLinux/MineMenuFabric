@@ -15,8 +15,9 @@
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.primaryColor.@Tooltip": "Hex Farbe - Unterstützt \"#\", \"0x\" und mehr",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.secondaryColor": "Normale Farbe",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.secondaryColor.@Tooltip": "Hex Farbe - Unterstützt \"#\", \"0x\" und mehr",
-  "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon": "Leeres Icon",
-  "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon.@Tooltip": "Icon für leere Einträge",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon": "Platzhalter Icon",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.showTips": "Tipps anzeigen",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.repeatButton": "Wiederholen-Knopf zeigen",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetHeadCache": "Spielerkopf-cache leeren",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetHeadCache.@Tooltip": "Der Spielerkopf-cache wird geleert sobald du Fertig drückst",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetConfig": "Config zurücksetzen",
@@ -37,7 +38,12 @@
   "minemenu.setting.input.text": "Text:",
   "minemenu.setting.input.key": "Taste:",
   "minemenu.setting.input.key.delay": "Loslass Wartezeit: %sms",
-  "minemenu.error.config": "§l§c Unbrauchbare Config! Setze sie über das Konfigurationsmenü zurück! \n(Dies kann nach einem Update passieren)",
+  "minemenu.error.config": "§l§c Es gab ein Problem! Schreibe dem Entwickler!",
   "minemenu.select.copied": "In die Zwischenablage kopiert!",
-  "minemenu.error.link": "Keine URL/URI!"
+  "minemenu.error.link": "Keine URL/URI!",
+  "minemenu.gui.repeat": "Wiederholen",
+  "minemenu.gui.noRepeat": "Nichts zum wiederholen!",
+  "minemenu.gui.tip.Repeatedit": "Tipp: Zum bearbeiten der letzten Aktion du auf den wiederholen Knopf rechtsklicken!",
+  "minemenu.gui.tip.Reverse": "Tipp: Um rückwärts durch manche Optionen zu wechseln, kannst du sie rechtsklicken!"
+
 }

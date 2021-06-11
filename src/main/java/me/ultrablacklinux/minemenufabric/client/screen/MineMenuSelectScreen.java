@@ -10,6 +10,7 @@ import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
 import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -42,29 +43,40 @@ public class MineMenuSelectScreen extends Screen {
     private final int outerRadius;
     private final int innerRadius;
 
+    private ButtonWidget repeatButton;
+
     public MineMenuSelectScreen(JsonObject menuData, String menuTitle, Screen parent) {
         super(Text.of(menuTitle));
-
-
         this.jsonItems = menuData;
-
         if (parent == null) datapath = new ArrayList<>();
-
-
         circleEntries = Config.get().minemenuFabric.menuEntries;
         outerRadius = Config.get().minemenuFabric.outerRadius;
         innerRadius = Config.get().minemenuFabric.innerRadius;
     }
 
-    @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderGui(matrices, mouseX, mouseY);
+    public void tick() {
+        if (repeatButton.isHovered() && repeatData != null) {
+            repeatButton.setMessage(Text.of(repeatData.get("name").getAsString()));
+        }
+        else if (repeatButton.isHovered() && repeatData == null)  {
+            repeatButton.setMessage(new TranslatableText("minemenu.gui.noRepeat"));
+        }
+        else repeatButton.setMessage(new TranslatableText("minemenu.gui.repeat"));
     }
 
-    private void renderGui(MatrixStack matrixStack, int mouseX, int mouseY) {
+    protected void init() {
+        repeatButton = this.addButton(new ButtonWidget(this.width / 2 - 75, this.height - 35, 150, 20,
+                new TranslatableText("minemenu.gui.repeat"), (buttonWidget) -> {
+            if (repeatData != null) this.handleTypes(repeatData);
+        }));
+        repeatButton.visible = Config.get().minemenuFabric.repeatButton;
+    }
+
+    @Override
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         int centerX = this.client.getWindow().getScaledWidth() / 2;
         int centerY = this.client.getWindow().getScaledHeight() / 2;
-        this.client.textRenderer.draw(matrixStack, this.title,
+        this.client.textRenderer.draw(matrices, this.title,
                 centerX - this.client.textRenderer.getWidth(this.title) / 2.0F,
                 centerY - outerRadius - 20,
                 0xFFFFFF);
@@ -74,7 +86,12 @@ public class MineMenuSelectScreen extends Screen {
         int mouseAngle = (int) AngleHelper.getMouseAngle();
 
         for (Map.Entry<String, JsonElement> entry : jsonItems.entrySet()) {
-            JsonObject value = entry.getValue().getAsJsonObject();
+            JsonObject value;
+            try {
+                value = entry.getValue().getAsJsonObject();
+            } catch (Exception e) {
+                continue;
+            }
 
             int nextAngle = currentAngle + degrees;
             nextAngle = (int) AngleHelper.correctAngle(nextAngle);
@@ -115,7 +132,7 @@ public class MineMenuSelectScreen extends Screen {
                     if (i == null) {
                         try {
                             client.getItemRenderer().renderInGui(playerHeadCache.get(iconData.get("skullOwner").getAsString()), drawX, drawY);
-                        } catch (Exception e) {}
+                        } catch (Exception ignore) {}
                     }
                     else client.getItemRenderer().renderInGui(i, drawX, drawY);
                 }
@@ -123,7 +140,6 @@ public class MineMenuSelectScreen extends Screen {
 
             String itemName = value.get("name").getAsString().trim();
             Text itemNameText = new TranslatableText(itemName);
-
 
             int primaryColor;
             try { primaryColor = RandomUtil.getColor(Config.get().minemenuFabric.primaryColor).getColor(); }
@@ -134,27 +150,27 @@ public class MineMenuSelectScreen extends Screen {
             catch (Exception e) { secondaryColor = RandomUtil.getColor("#212121D0").getColor(); }
 
             if (isHovered) {
-                this.drawDoughnutSegment(matrixStack,
+                MineMenuSelectScreen.drawDoughnutSegment(matrices,
                         currentAngle, currentAngle + degrees / 2, centerX, centerY,
                         outerRadius + 5, innerRadius,
                         primaryColor);
-                this.drawDoughnutSegment(matrixStack,
+                MineMenuSelectScreen.drawDoughnutSegment(matrices,
                         currentAngle + degrees / 2, currentAngle + degrees, centerX, centerY,
                         outerRadius + 5, innerRadius,
                         primaryColor);
 
-                this.client.textRenderer.draw(matrixStack,
+                this.client.textRenderer.draw(matrices,
                         itemNameText,
                         centerX - this.client.textRenderer.getWidth(itemNameText) / 2.0F,
                         centerY + outerRadius + 10,
                         0xFFFFFF);
             } else {
-                this.drawDoughnutSegment(matrixStack,
+                MineMenuSelectScreen.drawDoughnutSegment(matrices,
                         currentAngle,
                         currentAngle + degrees / 2, centerX, centerY,
                         outerRadius, innerRadius,
                         secondaryColor);
-                this.drawDoughnutSegment(matrixStack,
+                MineMenuSelectScreen.drawDoughnutSegment(matrices,
                         currentAngle + degrees / 2,
                         currentAngle + degrees,
                         centerX, centerY,
@@ -165,10 +181,21 @@ public class MineMenuSelectScreen extends Screen {
             currentAngle += degrees;
             currentAngle = (int) AngleHelper.correctAngle(currentAngle);
         }
+        super.render(matrices, mouseX, mouseY, delta);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (repeatButton.isMouseOver(mouseX, mouseY)) {
+            if (button == 1 && repeatDatapath != null) {
+                isRepeatEdit = true;
+                try {
+                    client.openScreen(new MineMenuSettingsScreen(this, true));
+                } catch (Exception ignore) {}
+                return true;
+            }
+            return super.mouseClicked(mouseX, mouseY, button);
+        }
         int centerX = this.client.getWindow().getScaledWidth() / 2;
         int centerY = this.client.getWindow().getScaledHeight() / 2;
         if (!AngleHelper.isInsideCircle(mouseX, mouseY, centerX, centerY, innerRadius)
@@ -179,20 +206,18 @@ public class MineMenuSelectScreen extends Screen {
             int mouseAngle = (int) AngleHelper.getMouseAngle();
 
             for (Map.Entry<String, JsonElement> entry : jsonItems.entrySet()) {
-                JsonObject value = entry.getValue().getAsJsonObject();
+                JsonObject value;
+                try {
+                     value = entry.getValue().getAsJsonObject();
+                } catch (Exception e) {continue; }
                 int nextAngle = currentAngle + degrees;
                 nextAngle = (int) AngleHelper.correctAngle(nextAngle);
                 boolean mouseIn = AngleHelper.isAngleBetween(mouseAngle, currentAngle-0.1f, nextAngle-0.1f);
                 if (mouseIn) {
                     datapath.add(entry.getKey());
-                    if (button == 0) {
-                        this.handleTypes(value);
-                    }
-                    else if (button == 1) {
-                        RandomUtil.openConfigScreen(this);
-                    }
+                    if (button == 0) this.handleTypes(value);
+                    else if (button == 1) RandomUtil.openConfigScreen(this);
                 }
-
                 currentAngle += degrees;
                 currentAngle = (int) AngleHelper.correctAngle(currentAngle);
             }
@@ -208,23 +233,9 @@ public class MineMenuSelectScreen extends Screen {
         return false;
     }
 
-    /*public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (client.currentScreen instanceof MineMenuSelectScreen) {
-            client.player.input.pressingForward = InputUtil.isKeyPressed(client.getWindow().getHandle(), 87);
-            client.player.input.pressingBack = InputUtil.isKeyPressed(client.getWindow().getHandle(), 83);
-            client.player.input.pressingLeft = InputUtil.isKeyPressed(client.getWindow().getHandle(), 65);
-            client.player.input.pressingRight = InputUtil.isKeyPressed(client.getWindow().getHandle(), 68);
-            client.player.input.jumping = InputUtil.isKeyPressed(client.getWindow().getHandle(), 32);
-            client.player.input.sneaking = InputUtil.isKeyPressed(client.getWindow().getHandle(), 340);
-            return true;
 
-        }
-        else return super.keyPressed(keyCode, scanCode, modifiers);
-    }*/
-
-
-    public void drawDoughnutSegment(MatrixStack matrixStack, int startingAngle, int endingAngle, float centerX,
-                                    float centerY, double outerRingRadius, double innerRingRadius, int color) {
+    public static void drawDoughnutSegment(MatrixStack matrixStack, int startingAngle, int endingAngle, float centerX,
+                                           float centerY, double outerRingRadius, double innerRingRadius, int color) {
         float f = (float) (color >> 24 & 0xff) / 255F;
         float f1 = (float) (color >> 16 & 0xff) / 255F;
         float f2 = (float) (color >> 8 & 0xff) / 255F;
@@ -253,7 +264,15 @@ public class MineMenuSelectScreen extends Screen {
     }
 
     private void handleTypes(JsonObject value) {
-        switch (value.get("type").getAsString()) {
+        System.out.println("-----------------------");
+        System.out.println(datapath);
+        System.out.println(repeatDatapath);
+        System.out.println("-____________________________");
+
+        String type = value.get("type").getAsString();
+        updateRepeatData(type, value);
+
+        switch (type) {
             case "empty":
                 RandomUtil.openConfigScreen(this);
                 break;
@@ -261,6 +280,7 @@ public class MineMenuSelectScreen extends Screen {
             case "category":
                 datapath.add("data");
                 GsonUtil.saveJson(GsonUtil.fixEntryAmount(value.get("data").getAsJsonObject()));
+
                 client.openScreen(new MineMenuSelectScreen(value.get("data").getAsJsonObject(),
                         value.get("name").getAsString(), this));
                 break;
@@ -305,5 +325,16 @@ public class MineMenuSelectScreen extends Screen {
                 }
                 break;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void updateRepeatData(String type, JsonObject value) {
+        if (!type.equals("category")) {
+            repeatData = value;
+            if (!datapath.isEmpty()) {
+                repeatDatapath = (ArrayList<String>) datapath.clone();
+            }
+        }
+
     }
 }

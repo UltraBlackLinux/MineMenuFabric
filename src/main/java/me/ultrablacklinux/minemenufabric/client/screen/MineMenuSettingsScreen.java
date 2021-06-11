@@ -7,8 +7,9 @@ import com.google.gson.JsonPrimitive;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient;
 import me.ultrablacklinux.minemenufabric.client.config.Config;
-import me.ultrablacklinux.minemenufabric.client.screen.button.ItemConfigCycle;
-import me.ultrablacklinux.minemenufabric.client.screen.button.TypeCycle;
+import me.ultrablacklinux.minemenufabric.client.screen.util.ItemConfigCycle;
+import me.ultrablacklinux.minemenufabric.client.screen.util.Tips;
+import me.ultrablacklinux.minemenufabric.client.screen.util.TypeCycle;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
 import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
 import net.minecraft.client.MinecraftClient;
@@ -35,43 +36,47 @@ import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
 public class MineMenuSettingsScreen extends Screen {
     private TypeCycle typeCycle = TypeCycle.EMPTY;
     private ItemConfigCycle iconConfigCycle;
+    private InputUtil.Key buttonKeyBinding = InputUtil.UNKNOWN_KEY;
+    private SliderWidget keyBindreleaseSlider;
+    private final Screen parent;
+    ArrayList<String> localDPath;
+    JsonObject localData;
 
     private TextFieldWidget itemName;
     private TextFieldWidget iconDataText;
     private TextFieldWidget itemData;
     private ButtonWidget iconSettingType;
     private ButtonWidget type;
-
     private ButtonWidget keyBindButton;
-    private boolean keyBindButtonActive = false;
-    private InputUtil.Key buttonKeyBinding = InputUtil.UNKNOWN_KEY;
-    private SliderWidget keyBindreleaseSlider;
-    private int keyBindReleaseTime;
+    private ButtonWidget iconDataYesNo;
+    private ButtonWidget done;
 
     private String iconItem;
     private String skullowner;
+
+    private boolean keyBindButtonActive = false;
     private boolean iconDataBoolean = false;
-    private boolean enchanted;
-    private int customModelData;
-    private ButtonWidget iconDataYesNo;
-
-    private ButtonWidget done;
-
-    private final Screen parent;
-    JsonObject data;
+    private boolean enchanted = false;
     private boolean firstRun = true;
+    private int customModelData = 0;
+    private int keyBindReleaseTime = 0;
 
-    public MineMenuSettingsScreen(Screen parent, ArrayList<String> datapath) {
+    public MineMenuSettingsScreen(Screen parent, boolean repeat) {
         super(new TranslatableText("minemenu.settings.title"));
         this.parent = parent;
-        MineMenuFabricClient.datapath = datapath; //TODO fuck this
-
+        localDPath = repeat ? repeatDatapath : datapath;
+        this.updateData();
         iconConfigCycle = ItemConfigCycle.ICON;
 
-        data = minemenuData;
-        for (String s : datapath) {
-            data = data.get(s).getAsJsonObject();
-        }
+        System.out.println("-----------------------");
+        System.out.println(datapath);
+        System.out.println(repeatDatapath);
+        System.out.println("-____________________________");
+    }
+
+    private void updateData() {
+        localData = minemenuData;
+        for (String s : localDPath) localData = localData.get(s).getAsJsonObject();
     }
 
     public void tick() {
@@ -88,7 +93,6 @@ public class MineMenuSettingsScreen extends Screen {
         this.itemName = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 40, 200, 20,
                 new TranslatableText("minemenu.settings.name"));
         this.itemName.setMaxLength(32500);
-        this.itemName.setText(data.get("name").getAsString());
         this.itemName.setChangedListener(this::updateInput);
         this.children.add(this.itemName);
 
@@ -135,7 +139,21 @@ public class MineMenuSettingsScreen extends Screen {
                     .append(" <").formatted(Formatting.YELLOW)); //Definitely not stolen from minecraft's code
         }));
 
-        this.keyBindreleaseSlider = this.addButton(new SliderWidget(this.width / 2 - 100, 160, 200, 20, LiteralText.EMPTY, 0.0D) {
+        this.type = this.addButton(new ButtonWidget(this.width / 2 - 100, 180, 200,
+                20, typeCycle.getName(), (buttonWidget) -> {
+            typeCycle = typeCycle.next();
+            this.type.setMessage(typeCycle.getName());
+            this.updateInput();
+        }));
+
+        if (firstRun) {
+            this.itemName.setText(localData.get("name").getAsString());
+            this.readTypes(localData);
+            firstRun = false;
+        }
+
+        this.keyBindreleaseSlider = this.addButton(new SliderWidget(this.width / 2 - 100, 160, 200,
+                20, LiteralText.EMPTY, this.keyBindReleaseTime / 25000D) {
             { //hippedy, hoppedy, your code is now my property
                 this.updateMessage();
             }
@@ -151,32 +169,19 @@ public class MineMenuSettingsScreen extends Screen {
             }
         });
 
-        this.type = this.addButton(new ButtonWidget(this.width / 2 - 100, 180, 200,
-                20, typeCycle.getName(), (buttonWidget) -> {
-            typeCycle = typeCycle.next();
-            this.type.setMessage(typeCycle.getName());
-            this.updateInput();
-        }));
-
         //---------------------------- DONE CANCEL
 
-        this.addButton(new ButtonWidget(this.width / 2 - 100, 220, 100, 20,
+        this.addButton(new ButtonWidget(this.width / 2 - 100, 200, 100, 20,
                 ScreenTexts.CANCEL, (buttonWidget) -> close(true)));
 
-        this.done = this.addButton(new ButtonWidget(this.width / 2, 220, 100, 20,
+        this.done = this.addButton(new ButtonWidget(this.width / 2, 200, 100, 20,
                 ScreenTexts.DONE, (buttonWidget) -> close(false)));
-
-
-        if (firstRun) {
-            this.readTypes(data);
-            this.type.setMessage(typeCycle.getName());
-            firstRun = false;
-        }
 
         this.updateInput();
     }
 
     private void updateInput() {
+        if (firstRun) return;
         this.iconDataText.setEditable(iconConfigCycle != ItemConfigCycle.ENCHANTED && typeCycle != TypeCycle.EMPTY);
 
         if (typeCycle != TypeCycle.EMPTY) {
@@ -227,6 +232,9 @@ public class MineMenuSettingsScreen extends Screen {
             case LINK:
             case CLIPBOARD:
             case CHATBOX:
+                try {
+                    this.itemData.setText(localData.get("data").getAsString());
+                } catch (UnsupportedOperationException ingore) {}
                 this.itemData.setEditable(true);
                 break;
 
@@ -240,8 +248,10 @@ public class MineMenuSettingsScreen extends Screen {
                 break;
         }
 
-        this.iconSettingType.active = typeCycle != TypeCycle.EMPTY;
+        this.iconSettingType.setMessage(iconConfigCycle.getName());
+        this.type.setMessage(typeCycle.getName());
 
+        this.iconSettingType.active = typeCycle != TypeCycle.EMPTY;
         this.iconDataYesNo.active = iconConfigCycle == ItemConfigCycle.ENCHANTED;
         if (iconConfigCycle != ItemConfigCycle.ENCHANTED) this.iconDataYesNo.setMessage(Text.of(""));
         else this.iconDataYesNo.setMessage(iconDataBoolean ? ScreenTexts.YES : ScreenTexts.NO);
@@ -262,6 +272,21 @@ public class MineMenuSettingsScreen extends Screen {
             this.handleKeys(button, 0, 0, true);
             return true;
         }
+
+        else if (button == 1 && type.isMouseOver(mouseX, mouseY)) {
+            typeCycle = typeCycle.previous();
+            this.type.playDownSound(client.getSoundManager());
+            this.updateInput();
+            return true;
+        }
+
+        else if (button == 1 && iconSettingType.isMouseOver(mouseX, mouseY)) {
+            iconConfigCycle = iconConfigCycle.previous();
+            this.iconSettingType.playDownSound(client.getSoundManager());
+            this.updateInput();
+            return true;
+        }
+
         else return super.mouseClicked(mouseX, mouseY, button);
     }
 
@@ -307,11 +332,16 @@ public class MineMenuSettingsScreen extends Screen {
                         new TranslatableText("minemenu.setting.input.key") :
                         new TranslatableText("minemenu.setting.input.text"),
                 this.width / 2 - 100, 131, 0xFFa0a0a0);
+
+        if (Config.get().minemenuFabric.showTips) {
+            drawCenteredText(matrices, this.textRenderer, tips.getName(), this.width / 2,
+                    this.height-15, Formatting.YELLOW.getColorValue());
+        }
+
         this.itemName.render(matrices, mouseX, mouseY, delta);
         if (iconConfigCycle != ItemConfigCycle.ENCHANTED) this.iconDataText.render(matrices, mouseX, mouseY, delta);
         this.iconDataYesNo.render(matrices, mouseX, mouseY, delta);
         this.itemData.render(matrices, mouseX, mouseY, delta);
-
         ItemStack i;
         if (playerHeadCache.containsKey(skullowner) && !skullowner.trim().isEmpty()) {
             client.getItemRenderer().renderInGui(playerHeadCache.get(skullowner), this.width / 2 - 120, 82);
@@ -325,15 +355,35 @@ public class MineMenuSettingsScreen extends Screen {
             }
             else client.getItemRenderer().renderInGui(i, this.width / 2 - 120, 82);
         }
+        type.renderToolTip(matrices, mouseX, mouseY);
+        type.renderToolTip(matrices, mouseX, mouseY);
         super.render(matrices, mouseX, mouseY, delta);
     }
 
     private void close(boolean cancel) {
-        if (!cancel) applySettings();
-        if (datapath.get(datapath.size()-1).equals("data")) for (int i = 0; i < 2; i++) datapath.remove(datapath.size()-1);
-        if (datapath.size() != 0) datapath.remove(datapath.size()-1);
+        datapath = localDPath;
         this.client.keyboard.setRepeatEvents(false);
-        this.client.openScreen(this.parent);
+        if (!cancel) applySettings();
+        if (localDPath.size() > 1) {
+            if (localDPath.get(localDPath.size() - 1).equals("data")) {
+                for (int i = 0; i < 2; i++) localDPath.remove(localDPath.size() - 1);
+            }
+            else if (!isRepeatEdit) localDPath.remove(localDPath.size() - 1);
+        }
+
+        if (isRepeatEdit) {
+            this.updateData();
+            MineMenuSelectScreen.updateRepeatData(typeCycle.getName().asString().toLowerCase(), localData);
+            if (typeCycle == TypeCycle.EMPTY) {
+                repeatData = null;
+                repeatDatapath = null;
+            }
+            isRepeatEdit = false;
+
+            client.openScreen(new MineMenuSelectScreen(MineMenuFabricClient.minemenuData,
+                    new TranslatableText("minemenu.default.title").getString(), null));
+        }
+        else this.client.openScreen(this.parent);
     }
 
     private void saveIconVariable() {
@@ -348,8 +398,11 @@ public class MineMenuSettingsScreen extends Screen {
                 break;
 
             case CUSTOMMODELDATA:
-                try { this.customModelData = Integer.parseInt(this.iconDataText.getText()); }
-                catch (Exception e) { this.customModelData = 1;}
+                try {
+                    this.customModelData = Integer.parseInt(this.iconDataText.getText()); }
+                catch (Exception e) {
+                    this.customModelData = 0;
+                }
                 break;
 
             case SKULLOWNER:
@@ -386,15 +439,22 @@ public class MineMenuSettingsScreen extends Screen {
                 break;
 
             case CATEGORY:
-                if (this.data.size() > 1) {
-                    subDataOut = this.data.get("data");
+                try {
+                    if (this.localData.size() > 1) {
+                        subDataOut = this.localData.get("data");
+                        subDataOut.getAsJsonObject().remove("key");
+                        subDataOut.getAsJsonObject().remove("releaseDelay");
+                    }
+                    subDataOut = GsonUtil.fixEntryAmount(subDataOut.getAsJsonObject());
+                } catch (IllegalStateException e) {
+                    subDataOut = GsonUtil.fixEntryAmount(new JsonObject());
                 }
-                subDataOut = GsonUtil.fixEntryAmount(subDataOut.getAsJsonObject());
                 break;
         }
 
         GsonUtil.saveJson(GsonUtil.template(nameOut, typeCycle.name().toLowerCase(), subDataOut, iconItem, enchanted,
                 skullowner, customModelData));
+
         Config.get().minemenuFabric.minemenuData = minemenuData;
         AutoConfig.getConfigHolder(Config.class).save();
     }

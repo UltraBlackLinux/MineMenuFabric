@@ -14,6 +14,7 @@ public class GsonUtil {
 
     public static JsonObject template(String name, String type, JsonElement data, String itemIcon,
                                       boolean enchanted, String skullOwner, int customModelData) {
+
         JsonObject icon = new JsonObject();
         icon.add("iconItem", new JsonPrimitive(itemIcon));
         icon.add("enchanted", new JsonPrimitive(enchanted));
@@ -57,10 +58,11 @@ public class GsonUtil {
      */
     @SuppressWarnings("unchecked")
     public static void saveJson(JsonObject jso) {
-        ArrayList<String> localDatapath = (ArrayList<String>) MineMenuFabricClient.datapath.clone();
-        if (localDatapath.size() == 1) {
-            MineMenuFabricClient.minemenuData.add(localDatapath.get(0), jso);
-        }
+        ArrayList<String> localDatapath;
+        if (MineMenuFabricClient.isRepeatEdit) localDatapath = (ArrayList<String>) MineMenuFabricClient.repeatDatapath.clone();
+        else localDatapath = (ArrayList<String>) MineMenuFabricClient.datapath.clone();
+
+        if (localDatapath.size() == 1) MineMenuFabricClient.minemenuData.add(localDatapath.get(0), jso);
         else if (localDatapath.size() > 1) {
             JsonObject building = jso;
             JsonObject tmp = new JsonObject();

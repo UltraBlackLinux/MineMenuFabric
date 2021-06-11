@@ -1,15 +1,19 @@
 package me.ultrablacklinux.minemenufabric.client;
 
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.ultrablacklinux.minemenufabric.client.config.Config;
 import me.ultrablacklinux.minemenufabric.client.screen.MineMenuSelectScreen;
+import me.ultrablacklinux.minemenufabric.client.screen.MineMenuSettingsScreen;
+import me.ultrablacklinux.minemenufabric.client.screen.util.Tips;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.ItemStack;
@@ -24,9 +28,13 @@ public class MineMenuFabricClient implements ClientModInitializer {
     MineMenuSelectScreen mineMenuSelectScreen;
     public static KeyBinding keyBinding;
     public static JsonObject minemenuData;
-    public static JsonObject levelData;
+    public static JsonObject repeatData = null;
+    public static ArrayList<String> repeatDatapath = null;
+    public static boolean isRepeatEdit = false;
     public static ArrayList<String> datapath;
     public static HashMap<String, ItemStack> playerHeadCache = new HashMap<>();
+    public static Tips tips = Tips.REPEATEDIT;
+    private static int cooldown = 0;
 
 
     @Override
@@ -38,6 +46,14 @@ public class MineMenuFabricClient implements ClientModInitializer {
                 "minemenu.category"));
 
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
+            if (MinecraftClient.getInstance().currentScreen instanceof MineMenuSettingsScreen) {
+                if (cooldown == 0) {
+                    cooldown = 300;
+                    tips = tips.next();
+                }
+                else --cooldown;
+            }
+
             if (Config.get().minemenuFabric.resetConfig) {
                 Config.get().minemenuFabric.resetConfig = false;
                 Config.get().minemenuFabric.minemenuData = new JsonObject();

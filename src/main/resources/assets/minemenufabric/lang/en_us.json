@@ -15,8 +15,9 @@
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.primaryColor.@Tooltip": "Hex color - Supports \"#\", \"0x\" and more",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.secondaryColor": "Idle Color",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.secondaryColor.@Tooltip": "Hex color - Supports \"#\", \"0x\" and more",
-  "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon": "Empty Icon",
-  "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon.@Tooltip": "Icon for empty menu entries",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon": "Placeholder Icon",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.showTips": "Show Tips",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.repeatButton": "Show repeat-button",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetHeadCache": "Clear the PlayerHead-cache",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetHeadCache.@Tooltip": "The PlayerHead-cache will Clear, once you press done",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetConfig": "Reset the Config",
@@ -37,7 +38,11 @@
   "minemenu.setting.input.text": "Text:",
   "minemenu.setting.input.key": "Key:",
   "minemenu.setting.input.key.delay": "Release Delay: %sms",
-  "minemenu.error.config": "§l§c Invalid config! Reset it via the config menu! \n(This may happen after an update)",
+  "minemenu.error.config": "§l§c A problem occurred! Tell the developer!",
   "minemenu.select.copied": "Copied to clipboard!",
-  "minemenu.error.link": "Not a valid URL/URI!"
+  "minemenu.error.link": "Not a valid URL/URI!",
+  "minemenu.gui.repeat": "Repeat",
+  "minemenu.gui.noRepeat": "Nothing to repeat!",
+  "minemenu.gui.tip.Repeatedit": "Tip: You can edit your last action by rightclicking the repeat button!",
+  "minemenu.gui.tip.Reverse": "Tip: You can cycle some settings in reverse by rightclicking them!"
 }

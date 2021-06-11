@@ -22,7 +22,6 @@ import net.minecraft.util.registry.Registry;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.datapath;
 
@@ -50,7 +49,7 @@ public class RandomUtil {
                     EnchantmentHelper.set(e, out);
                 }
 
-                if (!skullowner.equals("") && isSkullItem(out)) {
+                if (!skullowner.isEmpty() && isSkullItem(out)) {
                     ItemStack finalOut = out;
                     Thread nbTater = new Thread(() -> {
                         CompoundTag skullTag = finalOut.getOrCreateTag();
@@ -84,7 +83,7 @@ public class RandomUtil {
     public static void openConfigScreen(Screen parent) {
         MinecraftClient client = MinecraftClient.getInstance();
         try {
-            client.openScreen(new MineMenuSettingsScreen(parent, datapath));
+            client.openScreen(new MineMenuSettingsScreen(parent, false));
         } catch (NullPointerException e) {
             e.printStackTrace();
             client.openScreen(null);
