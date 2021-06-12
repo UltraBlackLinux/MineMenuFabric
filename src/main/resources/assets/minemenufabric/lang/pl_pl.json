@@ -29,7 +29,7 @@
   "minemenu.setting.MenuTypes.Link": "Otwórz Lnk",
   "minemenu.setting.MenuTypes.Category": "Kategoria",
   "minemenu.setting.MenuTypes.Chatbox": "Otwórz w Czacie",
-  "minemenu.setting.MenuTypes.Keybinding": "Klawisz",
+  "minemenu.setting.MenuTypes.Keyselect": "Klawisz",
   "minemenu.setting.MenuTypes.Empty": "Puste",
   "minemenu.setting.input.name": "Nazwa:",
   "minemenu.setting.input.icon": "Ikona:",
@@ -40,9 +40,9 @@
   "minemenu.select.copied": "Skopiowano do schowka!",
   "minemenu.error.link": "Niepoprawny adres URL/URI!",
   "minemenu.gui.repeat": "Powtórz",
-  "minemenu.gui.noRepeat": "Nothing to repeat!",
-  "minemenu.gui.tip.Repeatedit": "Tip: You can edit your last action by rightclicking the repeat button!",
-  "minemenu.gui.tip.Reverse": "Tip: Wskazówka: Możesz cofać opcję wyboru poprzez naciśnięcie prawego przycisku myszy!",
-  "text.autoconfig.MinemenuFabric.option.minemenuFabric.showTips": "Show Tips",
-  "text.autoconfig.MinemenuFabric.option.minemenuFabric.repeatButton": "Show repeat-button"
+  "minemenu.gui.noRepeat": "Nic do powtórzenia!",
+  "minemenu.gui.tip.Repeatedit": "Wskazówka: Możesz edydtować swoją ostatnią czynność poprzez naciśnięcia prawygo przycisku maszy nad przyciskiem \"Powtórz\"!",
+  "minemenu.gui.tip.Reverse": "Wskazówka: Możesz cofać opcję wyboru poprzez naciśnięcie prawego przycisku myszy!",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.showTips": "Pokaż wskazówki",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.repeatButton": "Pokaż przycisk \"Powtórz"
 }
