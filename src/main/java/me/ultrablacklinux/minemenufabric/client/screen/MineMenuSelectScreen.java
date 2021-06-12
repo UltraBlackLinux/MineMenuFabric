@@ -8,6 +8,7 @@ import me.ultrablacklinux.minemenufabric.client.config.Config;
 import me.ultrablacklinux.minemenufabric.client.util.AngleHelper;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
 import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
+import me.ultrablacklinux.minemenufabric.access.KeyBindingInterface;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -16,7 +17,6 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -27,6 +27,8 @@ import org.lwjgl.opengl.GL11;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
@@ -39,6 +41,7 @@ import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
 @SuppressWarnings("ConstantConditions")
 public class MineMenuSelectScreen extends Screen {
     private final JsonObject jsonItems; //MUST NEVER BE STATIC - WILL BE NULL OTHERWISE
+    public static List<KeyBinding> keyBindings;
     private final int circleEntries;
     private final int outerRadius;
     private final int innerRadius;
@@ -65,6 +68,7 @@ public class MineMenuSelectScreen extends Screen {
     }
 
     protected void init() {
+        keyBindings = Arrays.asList(client.options.keysAll);
         repeatButton = this.addButton(new ButtonWidget(this.width / 2 - 75, this.height - 35, 150, 20,
                 new TranslatableText("minemenu.gui.repeat"), (buttonWidget) -> {
             if (repeatData != null) this.handleTypes(repeatData);
@@ -191,7 +195,9 @@ public class MineMenuSelectScreen extends Screen {
                 isRepeatEdit = true;
                 try {
                     client.openScreen(new MineMenuSettingsScreen(this, true));
-                } catch (Exception ignore) {}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 return true;
             }
             return super.mouseClicked(mouseX, mouseY, button);
@@ -264,10 +270,10 @@ public class MineMenuSelectScreen extends Screen {
     }
 
     private void handleTypes(JsonObject value) {
-        System.out.println("-----------------------");
+        System.out.println("----Select Screen----"); //TODO REMOVE
         System.out.println(datapath);
         System.out.println(repeatDatapath);
-        System.out.println("-____________________________");
+        System.out.println("-----------------------");;
 
         String type = value.get("type").getAsString();
         updateRepeatData(type, value);
@@ -301,16 +307,49 @@ public class MineMenuSelectScreen extends Screen {
                 this.client.openScreen(null);
                 break;
 
-            case "keybinding":
+            /*case "keydetect":
                 if (client.currentScreen instanceof MineMenuSelectScreen) this.client.openScreen(null);
-                InputUtil.Key key = InputUtil.fromTranslationKey(value.get("data").getAsJsonObject().get("key").getAsString());
-                int releaseDelay = value.get("data").getAsJsonObject().get("releaseDelay").getAsInt();
-                Thread press = new Thread(() -> {
-                    KeyBinding.setKeyPressed(key, true);
-                    try { Thread.sleep(releaseDelay); } catch (InterruptedException e) { e.printStackTrace(); }
-                    KeyBinding.setKeyPressed(key, false);
+                InputUtil.Key detectedKey = InputUtil
+                        .fromTranslationKey(value.get("data").getAsJsonObject().get("key").getAsString());
+
+                //KeyBindingHelper.getBoundKeyOf()
+                //TODO what do I do with this :/
+                //boolean isMovementKey = tmpBinding.getCategory().equals("key.categories.movement");
+
+                Thread detectedPress = new Thread(() -> {
+                    KeyBinding.setKeyPressed(detectedKey, true);
+                    try {
+                        Thread.sleep(value.get("data").getAsJsonObject().get("releaseDelay").getAsInt());
+                    }
+                    catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    KeyBinding.setKeyPressed(detectedKey, false);
                 });
-                press.start();
+
+                detectedPress.start();
+                break;*/
+
+            case "keyselect":
+                if (client.currentScreen instanceof MineMenuSelectScreen) this.client.openScreen(null);
+
+                KeyBinding tmpBinding = keyBindings.stream()
+                        .filter(keyBindingstream -> keyBindingstream.getTranslationKey().equals(value.get("data")
+                                .getAsJsonObject().get("key").getAsString())).findFirst().get();
+
+                Thread press = new Thread(() -> {
+                    int delay = value.get("data").getAsJsonObject().get("releaseDelay").getAsInt();
+                    pressKey(delay != 25001 || !tmpBinding.isPressed(), tmpBinding);
+                    try {
+                        Thread.sleep(delay);
+                    }
+                    catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (delay != 25001) pressKey(false, tmpBinding);
+                });
+
+                press.start();;
                 break;
 
             case "link":
@@ -325,6 +364,12 @@ public class MineMenuSelectScreen extends Screen {
                 }
                 break;
         }
+    }
+
+    private static void pressKey(boolean pressed, KeyBinding keyBinding) {
+        int timesPressed = ((KeyBindingInterface) keyBinding).getTimesPressed();
+        if (keyBinding.getCategory().equals("key.categories.movement")) keyBinding.setPressed(pressed);
+        else ((KeyBindingInterface) keyBinding).setTimesPressed(timesPressed >= 1 ? 0 : 1);
     }
 
     @SuppressWarnings("unchecked")

@@ -4,25 +4,21 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Nameable;
 
-public enum TypeCycle implements Nameable {
-    PRINT,
-    CHATBOX,
-    CLIPBOARD,
-    LINK,
-    KEYBINDING,
+public enum IconConfigOptions implements Nameable {
+    ICON,
+    ENCHANTED,
+    CUSTOMMODELDATA,
+    SKULLOWNER;
 
-    CATEGORY,
-    EMPTY;
-
-    public TypeCycle next() {
-        TypeCycle[] v = values();
+    public IconConfigOptions next() {
+        IconConfigOptions[] v = values();
         if (v.length == this.ordinal() + 1) {
             return v[0]; }
         return v[this.ordinal() + 1];
     }
 
-    public TypeCycle previous() {
-        TypeCycle[] v = values();
+    public IconConfigOptions previous() {
+        IconConfigOptions[] v = values();
         if (this.ordinal() == 0) {
             return v[v.length-1]; }
         return v[this.ordinal()-1];
@@ -30,6 +26,7 @@ public enum TypeCycle implements Nameable {
 
     @Override
     public Text getName() {
-        return new TranslatableText("minemenu.setting.typecycle." + this.name().substring(0,1) + this.name().substring(1).toLowerCase());
+        return new TranslatableText("minemenu.setting.itemconfigcycle." +
+                this.name().charAt(0) + this.name().substring(1).toLowerCase());
     }
 }

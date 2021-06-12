@@ -7,9 +7,8 @@ import com.google.gson.JsonPrimitive;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient;
 import me.ultrablacklinux.minemenufabric.client.config.Config;
-import me.ultrablacklinux.minemenufabric.client.screen.util.ItemConfigCycle;
-import me.ultrablacklinux.minemenufabric.client.screen.util.Tips;
-import me.ultrablacklinux.minemenufabric.client.screen.util.TypeCycle;
+import me.ultrablacklinux.minemenufabric.client.screen.util.IconConfigOptions;
+import me.ultrablacklinux.minemenufabric.client.screen.util.MenuTypes;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
 import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
 import net.minecraft.client.MinecraftClient;
@@ -29,24 +28,29 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
 
 @SuppressWarnings("ALL")
 public class MineMenuSettingsScreen extends Screen {
-    private TypeCycle typeCycle = TypeCycle.EMPTY;
-    private ItemConfigCycle iconConfigCycle;
-    private InputUtil.Key buttonKeyBinding = InputUtil.UNKNOWN_KEY;
+    private MenuTypes itemTypes = MenuTypes.EMPTY;
+    private IconConfigOptions iconConfigCycle = IconConfigOptions.ICON;;
     private SliderWidget keyBindreleaseSlider;
     private final Screen parent;
-    ArrayList<String> localDPath;
-    JsonObject localData;
+    private ArrayList<String> localDPath;
+    private JsonObject localData;
+    private InputUtil.Key usedKey = null;
+    private KeyBinding usedBinding = null;
+    public static List<KeyBinding> keyBindings;
+    //int keyBindingsIndex = 0;
 
     private TextFieldWidget itemName;
     private TextFieldWidget iconDataText;
     private TextFieldWidget itemData;
     private ButtonWidget iconSettingType;
-    private ButtonWidget type;
+    private ButtonWidget itemType;
     private ButtonWidget keyBindButton;
     private ButtonWidget iconDataYesNo;
     private ButtonWidget done;
@@ -54,7 +58,7 @@ public class MineMenuSettingsScreen extends Screen {
     private String iconItem;
     private String skullowner;
 
-    private boolean keyBindButtonActive = false;
+    private boolean keyListenerActive = false;
     private boolean iconDataBoolean = false;
     private boolean enchanted = false;
     private boolean firstRun = true;
@@ -66,15 +70,18 @@ public class MineMenuSettingsScreen extends Screen {
         this.parent = parent;
         localDPath = repeat ? repeatDatapath : datapath;
         this.updateData();
-        iconConfigCycle = ItemConfigCycle.ICON;
 
-        System.out.println("-----------------------");
+        System.out.println("----SettingsScreen----"); //TODO REMOVE
         System.out.println(datapath);
         System.out.println(repeatDatapath);
-        System.out.println("-____________________________");
+        System.out.println("-----------------------");
     }
 
     private void updateData() {
+        /*if (localDPath == null) {
+            client.openScreen(null);
+            return;
+        }*/
         localData = minemenuData;
         for (String s : localDPath) localData = localData.get(s).getAsJsonObject();
     }
@@ -101,21 +108,21 @@ public class MineMenuSettingsScreen extends Screen {
         this.iconDataText = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 101, 200, 20,
                         new TranslatableText("minemenu.settings.icon.data"));
         this.iconDataText.setMaxLength(32500);
-        this.iconDataText.setChangedListener(this::saveIconVariable);
+        this.iconDataText.setChangedListener(this::saveIcon);
         this.children.add(this.iconDataText);
 
         this.iconDataYesNo = this.addButton(
                 new ButtonWidget(this.width / 2 - 100, 101, 200, 20, Text.of(""), (buttonWidget) -> {
                     this.iconDataBoolean = !iconDataBoolean;
-                    this.saveIconVariable();
+                    this.saveIcon();
                     this.updateInput();
         }));
 
         this.iconSettingType = this.addButton(new ButtonWidget(this.width / 2 - 100, 80, 200,
                 20, iconConfigCycle.getName(), (buttonWidget) -> {
-            this.saveIconVariable();
+            this.saveIcon();
             iconConfigCycle = iconConfigCycle.next();
-            if (iconConfigCycle == ItemConfigCycle.SKULLOWNER &&
+            if (iconConfigCycle == IconConfigOptions.SKULLOWNER &&
                     !this.iconItem.replace("minecraft:", "").equals("player_head")) {
                 iconConfigCycle = iconConfigCycle.next();
             }
@@ -132,17 +139,22 @@ public class MineMenuSettingsScreen extends Screen {
 
         this.keyBindButton = this.addButton(new ButtonWidget(this.width / 2 - 100, 140, 200, 20,
                 InputUtil.UNKNOWN_KEY.getLocalizedText(), (buttonWidget) -> {
-            this.keyBindButtonActive = !this.keyBindButtonActive;
-            this.updateInput();
-            if (keyBindButtonActive) this.keyBindButton.setMessage((new LiteralText("> "))
-                    .append(this.keyBindButton.getMessage().shallowCopy().formatted(Formatting.YELLOW))
-                    .append(" <").formatted(Formatting.YELLOW)); //Definitely not stolen from minecraft's code
+            /*if (itemTypes == itemTypes.KEYDETECT) {
+                this.keyListenerActive = !this.keyListenerActive;
+                this.updateInput();
+                if (keyListenerActive) this.keyBindButton.setMessage((new LiteralText("> "))
+                        .append(this.keyBindButton.getMessage().shallowCopy().formatted(Formatting.YELLOW))
+                        .append(" <").formatted(Formatting.YELLOW)); //Definitely not stolen from minecraft's code
+            }
+            else */if (itemTypes == itemTypes.KEYSELECT) {
+                this.keyBindCycle(false);
+            }
         }));
 
-        this.type = this.addButton(new ButtonWidget(this.width / 2 - 100, 180, 200,
-                20, typeCycle.getName(), (buttonWidget) -> {
-            typeCycle = typeCycle.next();
-            this.type.setMessage(typeCycle.getName());
+        this.itemType = this.addButton(new ButtonWidget(this.width / 2 - 100, 180, 200,
+                20, itemTypes.getName(), (buttonWidget) -> {
+            itemTypes = itemTypes.next();
+            this.itemType.setMessage(itemTypes.getName());
             this.updateInput();
         }));
 
@@ -153,19 +165,24 @@ public class MineMenuSettingsScreen extends Screen {
         }
 
         this.keyBindreleaseSlider = this.addButton(new SliderWidget(this.width / 2 - 100, 160, 200,
-                20, LiteralText.EMPTY, this.keyBindReleaseTime / 25000D) {
+                20, LiteralText.EMPTY, this.keyBindReleaseTime / 25001D) {
             { //hippedy, hoppedy, your code is now my property
                 this.updateMessage();
             }
 
             protected void updateMessage() {
-                this.setMessage(new TranslatableText("minemenu.setting.input.key.delay",
-                        MineMenuSettingsScreen.this.keyBindReleaseTime));
+                if (this.value == 1) {
+                    this.setMessage(new TranslatableText("minemenu.gui.toggle"));
+                }
+                else {
+                    this.setMessage(new TranslatableText("minemenu.setting.input.key.delay",
+                            MineMenuSettingsScreen.this.keyBindReleaseTime));
+                }
             }
 
             protected void applyValue() {
                 MineMenuSettingsScreen.this.keyBindReleaseTime
-                        = MathHelper.floor(MathHelper.clampedLerp(0, 25000, this.value));
+                        = MathHelper.floor(MathHelper.clampedLerp(0, 25001, this.value));
             }
         });
 
@@ -180,11 +197,33 @@ public class MineMenuSettingsScreen extends Screen {
         this.updateInput();
     }
 
+    private void keyBindCycle(boolean reverse) {
+        int index = keyBindings.indexOf(usedBinding);
+        //KeyBindingHelper.getBoundKeyOf()
+        if (this.usedBinding == null || (index == keyBindings.size() - 1 && !reverse)) {
+            this.usedBinding = keyBindings.get(0);
+        }
+
+        else if (index == 0 && reverse) {
+            this.usedBinding = keyBindings.get(keyBindings.size() - 1);
+        }
+
+        else if (!reverse) {
+            this.usedBinding = keyBindings.get(index + 1);
+        }
+
+        else if (reverse) {
+            this.usedBinding = keyBindings.get(index - 1);
+        }
+
+        this.keyBindButton.setMessage(new TranslatableText(usedBinding.getTranslationKey()));
+    }
+
     private void updateInput() {
         if (firstRun) return;
-        this.iconDataText.setEditable(iconConfigCycle != ItemConfigCycle.ENCHANTED && typeCycle != TypeCycle.EMPTY);
+        this.iconDataText.setEditable(iconConfigCycle != IconConfigOptions.ENCHANTED && itemTypes != MenuTypes.EMPTY);
 
-        if (typeCycle != TypeCycle.EMPTY) {
+        if (itemTypes != MenuTypes.EMPTY) {
             if (iconConfigCycle == iconConfigCycle.ENCHANTED) {
                 this.iconDataYesNo.visible = true;
                 this.iconDataText.visible = false;
@@ -216,7 +255,7 @@ public class MineMenuSettingsScreen extends Screen {
                 break;
         }
 
-        if (typeCycle == TypeCycle.KEYBINDING) {
+        if (/*itemTypes == MenuTypes.KEYDETECT ||*/ itemTypes == MenuTypes.KEYSELECT) {
             this.keyBindButton.visible = true;
             this.keyBindreleaseSlider.visible = true;
             this.itemData.visible = false;
@@ -227,20 +266,29 @@ public class MineMenuSettingsScreen extends Screen {
             this.itemData.visible = true;
         }
 
-        switch(typeCycle) {
+        switch(itemTypes) {
             case PRINT:
             case LINK:
             case CLIPBOARD:
             case CHATBOX:
                 try {
                     this.itemData.setText(localData.get("data").getAsString());
-                } catch (UnsupportedOperationException ingore) {}
+                } catch (Exception ingore) {}
                 this.itemData.setEditable(true);
                 break;
 
-            case KEYBINDING:
+            /*case KEYDETECT:
                 this.itemData.setEditable(false);
-                this.keyBindButton.setMessage(this.buttonKeyBinding.getLocalizedText());
+                try {
+                    this.keyBindButton.setMessage(this.usedKey.getLocalizedText());
+                } catch (Exception ingore) {}
+                break;*/
+
+            case KEYSELECT:
+                this.itemData.setEditable(false);
+                try {
+                    this.keyBindButton.setMessage(new TranslatableText(this.usedBinding.getTranslationKey()));
+                } catch (Exception ingore) {}
                 break;
 
             default:
@@ -249,18 +297,18 @@ public class MineMenuSettingsScreen extends Screen {
         }
 
         this.iconSettingType.setMessage(iconConfigCycle.getName());
-        this.type.setMessage(typeCycle.getName());
+        this.itemType.setMessage(itemTypes.getName());
 
-        this.iconSettingType.active = typeCycle != TypeCycle.EMPTY;
-        this.iconDataYesNo.active = iconConfigCycle == ItemConfigCycle.ENCHANTED;
-        if (iconConfigCycle != ItemConfigCycle.ENCHANTED) this.iconDataYesNo.setMessage(Text.of(""));
+        this.iconSettingType.active = itemTypes != MenuTypes.EMPTY;
+        this.iconDataYesNo.active = iconConfigCycle == IconConfigOptions.ENCHANTED;
+        if (iconConfigCycle != IconConfigOptions.ENCHANTED) this.iconDataYesNo.setMessage(Text.of(""));
         else this.iconDataYesNo.setMessage(iconDataBoolean ? ScreenTexts.YES : ScreenTexts.NO);
-        this.itemName.setEditable(typeCycle != TypeCycle.EMPTY);
-        this.done.active = typeCycle == TypeCycle.EMPTY || !this.itemName.getText().isEmpty();
+        this.itemName.setEditable(itemTypes != MenuTypes.EMPTY);
+        this.done.active = itemTypes == MenuTypes.EMPTY || !this.itemName.getText().isEmpty();
     }
 
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (this.keyBindButtonActive) {
+        if (this.keyListenerActive) {
             this.handleKeys(keyCode, scanCode, modifiers, false);
             return true;
         }
@@ -268,45 +316,49 @@ public class MineMenuSettingsScreen extends Screen {
     }
 
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (this.keyBindButtonActive) {
+        if (this.keyListenerActive) {
             this.handleKeys(button, 0, 0, true);
             return true;
         }
 
-        else if (button == 1 && type.isMouseOver(mouseX, mouseY)) {
-            typeCycle = typeCycle.previous();
-            this.type.playDownSound(client.getSoundManager());
-            this.updateInput();
-            return true;
+        if (button == 1) { //RIGHTCLICK
+            if (this.itemTypes == itemTypes.KEYSELECT && keyBindButton.isMouseOver(mouseX, mouseY)) {
+                this.keyBindButton.playDownSound(client.getSoundManager());
+                this.keyBindCycle(true);
+                return true;
+            }
+            else if (itemType.isMouseOver(mouseX, mouseY)) {
+                itemTypes = itemTypes.previous();
+                this.itemType.playDownSound(client.getSoundManager());
+                this.updateInput();
+                return true;
+            }
+            else if (iconSettingType.isMouseOver(mouseX, mouseY)) {
+                iconConfigCycle = iconConfigCycle.previous();
+                this.iconSettingType.playDownSound(client.getSoundManager());
+                this.updateInput();
+                return true;
+            }
         }
-
-        else if (button == 1 && iconSettingType.isMouseOver(mouseX, mouseY)) {
-            iconConfigCycle = iconConfigCycle.previous();
-            this.iconSettingType.playDownSound(client.getSoundManager());
-            this.updateInput();
-            return true;
-        }
-
-        else return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     private void handleKeys(int keyCode, int scanCode, int modifiers, boolean mouse) {
         if (mouse) {
-            this.buttonKeyBinding = InputUtil.Type.MOUSE.createFromCode(keyCode);
-            //TODO fix button staying active after detecting press when using a mouse
+            this.usedKey = InputUtil.Type.MOUSE.createFromCode(keyCode);
         }
         else {
-            if (keyCode == 256) this.buttonKeyBinding = InputUtil.UNKNOWN_KEY;
-            else this.buttonKeyBinding = InputUtil.fromKeyCode(keyCode, scanCode);
+            if (keyCode == 256) this.usedKey = InputUtil.UNKNOWN_KEY;
+            else this.usedKey = InputUtil.fromKeyCode(keyCode, scanCode);
         }
 
-        this.keyBindButtonActive = false;
+        this.keyListenerActive = false;
         KeyBinding.updateKeysByCode();
         this.updateInput();
     }
 
-    private void saveIconVariable(String s) {
-        this.saveIconVariable();
+    private void saveIcon(String s) {
+        this.saveIcon();
     }
 
     private void updateInput(String s) {
@@ -339,7 +391,7 @@ public class MineMenuSettingsScreen extends Screen {
         }
 
         this.itemName.render(matrices, mouseX, mouseY, delta);
-        if (iconConfigCycle != ItemConfigCycle.ENCHANTED) this.iconDataText.render(matrices, mouseX, mouseY, delta);
+        if (iconConfigCycle != IconConfigOptions.ENCHANTED) this.iconDataText.render(matrices, mouseX, mouseY, delta);
         this.iconDataYesNo.render(matrices, mouseX, mouseY, delta);
         this.itemData.render(matrices, mouseX, mouseY, delta);
         ItemStack i;
@@ -355,26 +407,29 @@ public class MineMenuSettingsScreen extends Screen {
             }
             else client.getItemRenderer().renderInGui(i, this.width / 2 - 120, 82);
         }
-        type.renderToolTip(matrices, mouseX, mouseY);
-        type.renderToolTip(matrices, mouseX, mouseY);
+        itemType.renderToolTip(matrices, mouseX, mouseY);
+        itemType.renderToolTip(matrices, mouseX, mouseY);
         super.render(matrices, mouseX, mouseY, delta);
     }
 
     private void close(boolean cancel) {
-        datapath = localDPath;
         this.client.keyboard.setRepeatEvents(false);
         if (!cancel) applySettings();
-        if (localDPath.size() > 1) {
+        if (localDPath.size() >= 1) {
             if (localDPath.get(localDPath.size() - 1).equals("data")) {
                 for (int i = 0; i < 2; i++) localDPath.remove(localDPath.size() - 1);
             }
-            else if (!isRepeatEdit) localDPath.remove(localDPath.size() - 1);
+            else if (!isRepeatEdit) {
+                localDPath.remove(localDPath.size() - 1);
+            }
         }
+
+        datapath = localDPath;
 
         if (isRepeatEdit) {
             this.updateData();
-            MineMenuSelectScreen.updateRepeatData(typeCycle.getName().asString().toLowerCase(), localData);
-            if (typeCycle == TypeCycle.EMPTY) {
+            MineMenuSelectScreen.updateRepeatData(itemTypes.getName().asString().toLowerCase(), localData);
+            if (itemTypes == MenuTypes.EMPTY) {
                 repeatData = null;
                 repeatDatapath = null;
             }
@@ -384,9 +439,10 @@ public class MineMenuSettingsScreen extends Screen {
                     new TranslatableText("minemenu.default.title").getString(), null));
         }
         else this.client.openScreen(this.parent);
+
     }
 
-    private void saveIconVariable() {
+    private void saveIcon() {
         switch (iconConfigCycle) {
             case ENCHANTED:
                 this.enchanted = this.iconDataBoolean;
@@ -414,11 +470,10 @@ public class MineMenuSettingsScreen extends Screen {
     private void applySettings() {
         String nameOut = this.itemName.getText();
         String dataTextOut = this.itemData.getText();
-        String dataKeybinding = this.buttonKeyBinding.getTranslationKey();
         JsonElement subDataOut = new JsonObject();
         skullowner = skullowner.replaceAll("[^a-zA-Z0-9_]", "");
 
-        switch (typeCycle) {
+        switch (itemTypes) {
             case EMPTY:
                 nameOut = "";
                 iconItem = "";
@@ -433,8 +488,13 @@ public class MineMenuSettingsScreen extends Screen {
                 subDataOut = new JsonPrimitive(dataTextOut);
                 break;
 
-            case KEYBINDING:
-                subDataOut.getAsJsonObject().add("key", new JsonPrimitive(dataKeybinding));
+            /*case KEYDETECT:
+                subDataOut.getAsJsonObject().add("key", new JsonPrimitive(this.usedKey.getTranslationKey()));
+                subDataOut.getAsJsonObject().add("releaseDelay", new JsonPrimitive(keyBindReleaseTime));
+                break;*/
+
+            case KEYSELECT:
+                subDataOut.getAsJsonObject().add("key", new JsonPrimitive(this.usedBinding.getTranslationKey()));
                 subDataOut.getAsJsonObject().add("releaseDelay", new JsonPrimitive(keyBindReleaseTime));
                 break;
 
@@ -452,7 +512,7 @@ public class MineMenuSettingsScreen extends Screen {
                 break;
         }
 
-        GsonUtil.saveJson(GsonUtil.template(nameOut, typeCycle.name().toLowerCase(), subDataOut, iconItem, enchanted,
+        GsonUtil.saveJson(GsonUtil.template(nameOut, itemTypes.name().toLowerCase(), subDataOut, iconItem, enchanted,
                 skullowner, customModelData));
 
         Config.get().minemenuFabric.minemenuData = minemenuData;
@@ -465,9 +525,10 @@ public class MineMenuSettingsScreen extends Screen {
         this.enchanted = iconData.get("enchanted").getAsBoolean();
         this.iconItem = iconData.get("iconItem").getAsString();
         this.customModelData = iconData.get("customModelData").getAsInt();
-        typeCycle = TypeCycle.valueOf(data.get("type").getAsString().toUpperCase());
+        this.itemTypes = MenuTypes.valueOf(data.get("type").getAsString().toUpperCase());
+        this.keyBindings = Arrays.asList(client.options.keysAll);
 
-        switch (typeCycle) {
+        switch (itemTypes) {
             case PRINT:
             case CLIPBOARD:
             case LINK:
@@ -475,8 +536,18 @@ public class MineMenuSettingsScreen extends Screen {
                 this.itemData.setText(data.get("data").getAsString());
                 break;
 
-            case KEYBINDING:
-                this.buttonKeyBinding = InputUtil.fromTranslationKey(data.get("data").getAsJsonObject().get("key").getAsString());
+            /*case KEYDETECT:
+                this.usedKey = InputUtil.fromTranslationKey(data.get("data").getAsJsonObject().get("key").getAsString());
+                this.keyBindReleaseTime = data.get("data").getAsJsonObject().get("releaseDelay").getAsInt();
+                break;*/
+
+            case KEYSELECT:
+                try {
+                    this.usedBinding = this.keyBindings.stream()
+                            .filter(keyBindingstream -> keyBindingstream.getTranslationKey().equals(data.get("data")
+                                    .getAsJsonObject().get("key").getAsString())).findFirst().get();
+                } catch (Exception e) {}
+
                 this.keyBindReleaseTime = data.get("data").getAsJsonObject().get("releaseDelay").getAsInt();
                 break;
         }

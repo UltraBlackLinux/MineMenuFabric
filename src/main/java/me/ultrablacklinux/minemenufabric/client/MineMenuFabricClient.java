@@ -1,6 +1,5 @@
 package me.ultrablacklinux.minemenufabric.client;
 
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.ultrablacklinux.minemenufabric.client.config.Config;
@@ -21,7 +20,9 @@ import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class MineMenuFabricClient implements ClientModInitializer {
@@ -34,7 +35,7 @@ public class MineMenuFabricClient implements ClientModInitializer {
     public static ArrayList<String> datapath;
     public static HashMap<String, ItemStack> playerHeadCache = new HashMap<>();
     public static Tips tips = Tips.REPEATEDIT;
-    private static int cooldown = 0;
+    private static int tipSwitchCooldown = 0;
 
 
     @Override
@@ -47,11 +48,11 @@ public class MineMenuFabricClient implements ClientModInitializer {
 
         ClientTickEvents.START_CLIENT_TICK.register(client -> {
             if (MinecraftClient.getInstance().currentScreen instanceof MineMenuSettingsScreen) {
-                if (cooldown == 0) {
-                    cooldown = 300;
+                if (tipSwitchCooldown == 0) {
+                    tipSwitchCooldown = 300;
                     tips = tips.next();
                 }
-                else --cooldown;
+                else --tipSwitchCooldown;
             }
 
             if (Config.get().minemenuFabric.resetConfig) {
