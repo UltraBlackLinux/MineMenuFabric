@@ -44,5 +44,6 @@
   "minemenu.gui.tip.Repeatedit": "Wskazówka: Możesz edydtować swoją ostatnią czynność poprzez naciśnięcia prawygo przycisku maszy nad przyciskiem \"Powtórz\"!",
   "minemenu.gui.tip.Reverse": "Wskazówka: Możesz cofać opcję wyboru poprzez naciśnięcie prawego przycisku myszy!",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.showTips": "Pokaż wskazówki",
-  "text.autoconfig.MinemenuFabric.option.minemenuFabric.repeatButton": "Pokaż przycisk \"Powtórz"
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.repeatButton": "Pokaż przycisk \"Powtórz",
+  "minemenu.gui.toggle": "Toggle"
 }
