@@ -3,7 +3,7 @@ package me.ultrablacklinux.minemenufabric.mixin;
 import me.ultrablacklinux.minemenufabric.client.screen.MineMenuSelectScreen;
 import me.ultrablacklinux.minemenufabric.access.KeyBindingInterface;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.options.KeyBinding;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;

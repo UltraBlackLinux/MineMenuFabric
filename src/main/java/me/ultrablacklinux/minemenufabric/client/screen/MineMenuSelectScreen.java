@@ -3,22 +3,26 @@ package me.ultrablacklinux.minemenufabric.client.screen;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.ultrablacklinux.minemenufabric.access.KeyBindingInterface;
 import me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient;
 import me.ultrablacklinux.minemenufabric.client.config.Config;
 import me.ultrablacklinux.minemenufabric.client.util.AngleHelper;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
 import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
+import me.ultrablacklinux.minemenufabric.access.KeyBindingInterface;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.render.*;
+import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
+import org.lwjgl.opengl.GL11;
 
 import java.net.URI;
 import java.net.URL;
@@ -65,7 +69,7 @@ public class MineMenuSelectScreen extends Screen {
 
     protected void init() {
         keyBindings = Arrays.asList(client.options.keysAll);
-        repeatButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 75, this.height - 35, 150, 20,
+        repeatButton = this.addButton(new ButtonWidget(this.width / 2 - 75, this.height - 35, 150, 20,
                 new TranslatableText("minemenu.gui.repeat"), (buttonWidget) -> {
             if (repeatData != null) this.handleTypes(repeatData);
         }));
@@ -247,7 +251,7 @@ public class MineMenuSelectScreen extends Screen {
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_FAN,  VertexFormats.POSITION_COLOR);
+        bufferBuilder.begin(GL11.GL_TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
         for (int i = startingAngle; i <= endingAngle; i++) {
             double x = Math.sin(Math.toRadians(i)) * innerRingRadius;
             double y = Math.cos(Math.toRadians(i)) * innerRingRadius;
@@ -269,29 +273,39 @@ public class MineMenuSelectScreen extends Screen {
         System.out.println("----Select Screen----"); //TODO REMOVE
         System.out.println(datapath);
         System.out.println(repeatDatapath);
-        System.out.println("-----------------------");
+        System.out.println("-----------------------");;
 
         String type = value.get("type").getAsString();
         updateRepeatData(type, value);
 
         switch (type) {
-            case "empty" -> RandomUtil.openConfigScreen(this);
-            case "category" -> {
+            case "empty":
+                RandomUtil.openConfigScreen(this);
+                break;
+
+            case "category":
                 datapath.add("data");
                 GsonUtil.saveJson(GsonUtil.fixEntryAmount(value.get("data").getAsJsonObject()));
+
                 client.openScreen(new MineMenuSelectScreen(value.get("data").getAsJsonObject(),
                         value.get("name").getAsString(), this));
-            }
-            case "print" -> {
+                break;
+
+
+            case "print":
                 client.player.sendChatMessage(value.get("data").getAsString());
                 this.client.openScreen(null);
-            }
-            case "chatbox" -> client.openScreen(new ChatScreen(value.get("data").getAsString()));
-            case "clipboard" -> {
+                break;
+
+            case "chatbox":
+                client.openScreen(new ChatScreen(value.get("data").getAsString()));
+                break;
+
+            case "clipboard":
                 this.client.keyboard.setClipboard(value.get("data").getAsString());
                 client.player.sendMessage(new TranslatableText("minemenu.select.copied"), true);
                 this.client.openScreen(null);
-            }
+                break;
 
             /*case "keydetect":
                 if (client.currentScreen instanceof MineMenuSelectScreen) this.client.openScreen(null);
@@ -316,24 +330,29 @@ public class MineMenuSelectScreen extends Screen {
                 detectedPress.start();
                 break;*/
 
-            case "keyselect" -> {
+            case "keyselect":
                 if (client.currentScreen instanceof MineMenuSelectScreen) this.client.openScreen(null);
+
                 KeyBinding tmpBinding = keyBindings.stream()
                         .filter(keyBindingstream -> keyBindingstream.getTranslationKey().equals(value.get("data")
                                 .getAsJsonObject().get("key").getAsString())).findFirst().get();
+
                 Thread press = new Thread(() -> {
                     int delay = value.get("data").getAsJsonObject().get("releaseDelay").getAsInt();
                     pressKey(delay != 25001 || !tmpBinding.isPressed(), tmpBinding);
                     try {
                         Thread.sleep(delay);
-                    } catch (InterruptedException e) {
+                    }
+                    catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                     if (delay != 25001) pressKey(false, tmpBinding);
                 });
-                press.start();
-            }
-            case "link" -> {
+
+                press.start();;
+                break;
+
+            case "link":
                 String link = value.get("data").getAsString();
                 try {
                     if (!link.startsWith("http")) link = "http://" + link;
@@ -343,7 +362,7 @@ public class MineMenuSelectScreen extends Screen {
                 } catch (Exception e) {
                     client.player.sendMessage(new TranslatableText("minemenu.error.link"), true);
                 }
-            }
+                break;
         }
     }
 

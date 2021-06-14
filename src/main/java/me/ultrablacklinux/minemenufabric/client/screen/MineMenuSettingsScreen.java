@@ -17,7 +17,7 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -97,28 +97,28 @@ public class MineMenuSettingsScreen extends Screen {
 
         //---------------------------- NAME INPUT
 
-        this.itemName = this.addDrawableChild(new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 40, 200, 20,
-                new TranslatableText("minemenu.settings.name")));
+        this.itemName = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 40, 200, 20,
+                new TranslatableText("minemenu.settings.name"));
         this.itemName.setMaxLength(32500);
         this.itemName.setChangedListener(this::updateInput);
-        //this.addDrawableChild(this.itemName);
+        this.children.add(this.itemName);
 
         //---------------------------- ICON INPUT
 
-        this.iconDataText = this.addDrawableChild(new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 101, 200, 20,
-                        new TranslatableText("minemenu.settings.icon.data")));
+        this.iconDataText = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 101, 200, 20,
+                        new TranslatableText("minemenu.settings.icon.data"));
         this.iconDataText.setMaxLength(32500);
         this.iconDataText.setChangedListener(this::saveIcon);
-        //this.addDrawableChild(this.iconDataText);
+        this.children.add(this.iconDataText);
 
-        this.iconDataYesNo = this.addDrawableChild(
+        this.iconDataYesNo = this.addButton(
                 new ButtonWidget(this.width / 2 - 100, 101, 200, 20, Text.of(""), (buttonWidget) -> {
                     this.iconDataBoolean = !iconDataBoolean;
                     this.saveIcon();
                     this.updateInput();
         }));
 
-        this.iconSettingType = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 80, 200,
+        this.iconSettingType = this.addButton(new ButtonWidget(this.width / 2 - 100, 80, 200,
                 20, iconConfigCycle.getName(), (buttonWidget) -> {
             this.saveIcon();
             iconConfigCycle = iconConfigCycle.next();
@@ -132,12 +132,12 @@ public class MineMenuSettingsScreen extends Screen {
 
         //---------------------------- DATA INIPUT/TYPE
 
-        this.itemData = this.addDrawableChild(new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 141, 200, 20,
-                new TranslatableText("minemenu.settings.data")));
+        this.itemData = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 141, 200, 20,
+                new TranslatableText("minemenu.settings.data"));
         this.itemData.setMaxLength(32500);
-        //this.addDrawableChild(this.itemData);
+        this.children.add(this.itemData);
 
-        this.keyBindButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 140, 200, 20,
+        this.keyBindButton = this.addButton(new ButtonWidget(this.width / 2 - 100, 140, 200, 20,
                 InputUtil.UNKNOWN_KEY.getLocalizedText(), (buttonWidget) -> {
             /*if (itemTypes == itemTypes.KEYDETECT) {
                 this.keyListenerActive = !this.keyListenerActive;
@@ -151,7 +151,7 @@ public class MineMenuSettingsScreen extends Screen {
             }
         }));
 
-        this.itemType = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 180, 200,
+        this.itemType = this.addButton(new ButtonWidget(this.width / 2 - 100, 180, 200,
                 20, itemTypes.getName(), (buttonWidget) -> {
             itemTypes = itemTypes.next();
             this.itemType.setMessage(itemTypes.getName());
@@ -164,7 +164,7 @@ public class MineMenuSettingsScreen extends Screen {
             firstRun = false;
         }
 
-        this.keyBindreleaseSlider = this.addDrawableChild(new SliderWidget(this.width / 2 - 100, 160, 200,
+        this.keyBindreleaseSlider = this.addButton(new SliderWidget(this.width / 2 - 100, 160, 200,
                 20, LiteralText.EMPTY, this.keyBindReleaseTime / 25001D) {
             { //hippedy, hoppedy, your code is now my property
                 this.updateMessage();
@@ -188,10 +188,10 @@ public class MineMenuSettingsScreen extends Screen {
 
         //---------------------------- DONE CANCEL
 
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 200, 100, 20,
+        this.addButton(new ButtonWidget(this.width / 2 - 100, 200, 100, 20,
                 ScreenTexts.CANCEL, (buttonWidget) -> close(true)));
 
-        this.done = this.addDrawableChild(new ButtonWidget(this.width / 2, 200, 100, 20,
+        this.done = this.addButton(new ButtonWidget(this.width / 2, 200, 100, 20,
                 ScreenTexts.DONE, (buttonWidget) -> close(false)));
 
         this.updateInput();
