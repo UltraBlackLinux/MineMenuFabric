@@ -13,7 +13,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -26,6 +26,8 @@ import java.util.Map;
 import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.datapath;
 
 public class RandomUtil {
+    private static GameProfile gameProfile;
+
     public static me.shedaniel.math.Color getColor(String inp) {
         long colorLong = Long.decode(inp);
         float f = (float) (colorLong >> 24 & 0xff) / 255F;
@@ -40,7 +42,7 @@ public class RandomUtil {
         ItemStack out;
         try {
             out = itemStackFromString(iconItem);
-            CompoundTag customModelTag = out.getOrCreateTag();
+            NbtCompound customModelTag = out.getOrCreateTag();
             customModelTag.putInt("CustomModelData", customModelData);
             try {
                 if (enchanted) {
@@ -52,10 +54,10 @@ public class RandomUtil {
                 if (!skullowner.isEmpty() && isSkullItem(out)) {
                     ItemStack finalOut = out;
                     Thread nbTater = new Thread(() -> {
-                        CompoundTag skullTag = finalOut.getOrCreateTag();
-                        GameProfile gameProfile = new GameProfile(null, skullowner);
-                        gameProfile = SkullBlockEntity.loadProperties(gameProfile);
-                        skullTag.put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
+                        NbtCompound skullTag = finalOut.getOrCreateTag();
+                        gameProfile = new GameProfile(null, skullowner);
+                        SkullBlockEntity.loadProperties(gameProfile, RandomUtil::setGameProfile);
+                        skullTag.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
                         MineMenuFabricClient.playerHeadCache.putIfAbsent(skullowner, finalOut);
                     });
                     nbTater.start();
@@ -90,5 +92,9 @@ public class RandomUtil {
             assert client.player != null;
             client.player.sendMessage(new TranslatableText("minemenu.error.config"), false);
         }
+    }
+
+    private static void setGameProfile(GameProfile gpf) {
+        gameProfile = gpf;
     }
 }
