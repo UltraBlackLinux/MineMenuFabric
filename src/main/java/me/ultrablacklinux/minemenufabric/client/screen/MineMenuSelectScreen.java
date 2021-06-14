@@ -77,13 +77,11 @@ public class MineMenuSelectScreen extends Screen {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    public void render(MatrixStack matrixstack, int mouseX, int mouseY, float delta) {
         int centerX = this.client.getWindow().getScaledWidth() / 2;
         int centerY = this.client.getWindow().getScaledHeight() / 2;
-        this.client.textRenderer.draw(matrices, this.title,
-                centerX - this.client.textRenderer.getWidth(this.title) / 2.0F,
-                centerY - outerRadius - 20,
-                0xFFFFFF);
+
+        drawCenteredText(matrixstack, client.textRenderer, this.title, centerX, centerY - outerRadius - 20, 0xFFFFFF);
 
         int degrees = (int) (360.0D / circleEntries);
         int currentAngle = 360 - degrees / 2;
@@ -154,27 +152,25 @@ public class MineMenuSelectScreen extends Screen {
             catch (Exception e) { secondaryColor = RandomUtil.getColor("#212121D0").getColor(); }
 
             if (isHovered) {
-                MineMenuSelectScreen.drawDoughnutSegment(matrices,
+                drawDoughnutSegment(matrixstack,
                         currentAngle, currentAngle + degrees / 2, centerX, centerY,
                         outerRadius + 5, innerRadius,
                         primaryColor);
-                MineMenuSelectScreen.drawDoughnutSegment(matrices,
+                drawDoughnutSegment(matrixstack,
                         currentAngle + degrees / 2, currentAngle + degrees, centerX, centerY,
                         outerRadius + 5, innerRadius,
                         primaryColor);
 
-                this.client.textRenderer.draw(matrices,
-                        itemNameText,
-                        centerX - this.client.textRenderer.getWidth(itemNameText) / 2.0F,
-                        centerY + outerRadius + 10,
-                        0xFFFFFF);
+                drawCenteredText(matrixstack, client.textRenderer, itemNameText, centerX,
+                        centerY + outerRadius + 20, 0xFFFFFF);
+
             } else {
-                MineMenuSelectScreen.drawDoughnutSegment(matrices,
+                drawDoughnutSegment(matrixstack,
                         currentAngle,
                         currentAngle + degrees / 2, centerX, centerY,
                         outerRadius, innerRadius,
                         secondaryColor);
-                MineMenuSelectScreen.drawDoughnutSegment(matrices,
+                drawDoughnutSegment(matrixstack,
                         currentAngle + degrees / 2,
                         currentAngle + degrees,
                         centerX, centerY,
@@ -185,7 +181,7 @@ public class MineMenuSelectScreen extends Screen {
             currentAngle += degrees;
             currentAngle = (int) AngleHelper.correctAngle(currentAngle);
         }
-        super.render(matrices, mouseX, mouseY, delta);
+        super.render(matrixstack, mouseX, mouseY, delta);
     }
 
     @Override
