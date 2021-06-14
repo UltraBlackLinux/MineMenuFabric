@@ -233,6 +233,7 @@ public class MineMenuSelectScreen extends Screen {
         float f3 = (float) (color & 0xff) / 255F;
         matrixStack.push();
         Matrix4f modelMatrix = matrixStack.peek().getModel();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
