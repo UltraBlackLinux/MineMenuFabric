@@ -374,7 +374,7 @@ public class MineMenuSelectScreen extends Screen {
 
     @SuppressWarnings("unchecked")
     public static void updateRepeatData(String type, JsonObject value) {
-        if (!type.equals("category")) {
+        if (!type.equals("category") && !type.equals("empty")) {
             repeatData = value;
             if (!datapath.isEmpty()) {
                 repeatDatapath = (ArrayList<String>) datapath.clone();

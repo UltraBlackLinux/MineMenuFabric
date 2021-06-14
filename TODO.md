@@ -6,7 +6,6 @@
 
 #TODO
 - Automatic config fixer - updates
-- Keybind toggle/press: Alternative Hold implemented
 - Change invalid config message (update Polish translation)
 - Keybind for categories
 - De-highlight other text fields when interacting with one
