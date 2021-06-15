@@ -55,6 +55,8 @@ public class Config extends PartitioningSerializer.GlobalData {
         @ConfigEntry.Gui.Tooltip
         public boolean repeatButton = true;
 
+        public boolean inScreenWalk = false;
+
         @ConfigEntry.Gui.Tooltip
         public boolean resetHeadCache = false;
 
