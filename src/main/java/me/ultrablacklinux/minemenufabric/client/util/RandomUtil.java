@@ -61,7 +61,7 @@ public class RandomUtil {
 
                 } else out.removeSubTag("SkullOwner");
 
-            } catch (Exception ignore) {ignore.printStackTrace();}
+            } catch (Exception e) {e.printStackTrace();}
         } catch (InvalidIdentifierException e) {
             out = new ItemStack(Items.AIR);
         }

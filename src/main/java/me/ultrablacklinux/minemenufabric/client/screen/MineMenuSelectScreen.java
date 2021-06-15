@@ -269,7 +269,7 @@ public class MineMenuSelectScreen extends Screen {
         System.out.println("----Select Screen----"); //TODO REMOVE
         System.out.println(datapath);
         System.out.println(repeatDatapath);
-        System.out.println("-----------------------");;
+        System.out.println("-----------------------");
 
         String type = value.get("type").getAsString();
         updateRepeatData(type, value);
@@ -345,7 +345,7 @@ public class MineMenuSelectScreen extends Screen {
                     if (delay != 25001) pressKey(false, tmpBinding);
                 });
 
-                press.start();;
+                press.start();
                 break;
 
             case "link":
