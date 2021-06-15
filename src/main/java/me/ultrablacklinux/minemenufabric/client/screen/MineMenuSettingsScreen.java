@@ -244,6 +244,7 @@ public class MineMenuSettingsScreen extends Screen {
 
             case ENCHANTED:
                 iconDataBoolean = enchanted;
+                break;
 
             case CUSTOMMODELDATA:
                 this.iconDataText.setText(String.valueOf(this.customModelData));
