@@ -17,6 +17,7 @@
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon": "Placeholder Icon",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.showTips": "Show Tips",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.repeatButton": "Show repeat-button",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.inScreenWalk": "In-menu player movement",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetHeadCache": "Clear the PlayerHead-cache",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetHeadCache.@Tooltip": "The PlayerHead-cache will Clear, once you press done",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetConfig": "Reset the Config",
