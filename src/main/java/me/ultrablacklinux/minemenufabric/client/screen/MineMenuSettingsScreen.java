@@ -71,10 +71,10 @@ public class MineMenuSettingsScreen extends Screen {
         localDPath = repeat ? repeatDatapath : datapath;
         this.updateData();
 
-        System.out.println("----SettingsScreen----"); //TODO REMOVE
+        /*System.out.println("----SettingsScreen----"); //TODO REMOVE
         System.out.println(datapath);
         System.out.println(repeatDatapath);
-        System.out.println("-----------------------");
+        System.out.println("-----------------------");*/
     }
 
     private void updateData() {

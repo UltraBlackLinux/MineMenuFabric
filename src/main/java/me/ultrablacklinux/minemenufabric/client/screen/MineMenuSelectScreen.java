@@ -266,10 +266,10 @@ public class MineMenuSelectScreen extends Screen {
     }
 
     private void handleTypes(JsonObject value) {
-        System.out.println("----Select Screen----"); //TODO REMOVE
+        /*System.out.println("----Select Screen----"); //TODO REMOVE
         System.out.println(datapath);
         System.out.println(repeatDatapath);
-        System.out.println("-----------------------");
+        System.out.println("-----------------------");*/
 
         String type = value.get("type").getAsString();
         updateRepeatData(type, value);
