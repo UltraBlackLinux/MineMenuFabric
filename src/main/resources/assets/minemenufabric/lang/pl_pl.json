@@ -1,5 +1,4 @@
 {
-
   "minemenu.default.title": "MineMenu",
   "minemenu.category": "MineMenu",
   "minemenu.key.open": "Otwórz MineMenu",
@@ -45,5 +44,5 @@
   "minemenu.gui.tip.Reverse": "Wskazówka: Możesz cofać opcję wyboru poprzez naciśnięcie prawego przycisku myszy!",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.showTips": "Pokaż wskazówki",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.repeatButton": "Pokaż przycisk \"Powtórz",
-  "minemenu.gui.toggle": "Toggle"
+  "minemenu.gui.toggle": "Przełącz"
 }
