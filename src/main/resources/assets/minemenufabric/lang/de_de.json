@@ -1,4 +1,5 @@
 {
+
   "minemenu.default.title": "MineMenu",
   "minemenu.category": "MineMenu",
   "minemenu.key.open": "MineMenu öffnen",
@@ -16,7 +17,7 @@
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.secondaryColor.@Tooltip": "Hex Farbe - Unterstützt \"#\", \"0x\" und mehr",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon": "Platzhalter Icon",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.showTips": "Tipps anzeigen",
-  "text.autoconfig.MinemenuFabric.option.minemenuFabric.inScreenWalk": "In-menü Spieler Bewegung",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.inScreenWalk": "In-Menü Spieler Bewegung",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.repeatButton": "Wiederholen-Knopf zeigen",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetHeadCache": "Spielerkopf-cache leeren",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.resetHeadCache.@Tooltip": "Der Spielerkopf-cache wird geleert sobald du Fertig drückst",

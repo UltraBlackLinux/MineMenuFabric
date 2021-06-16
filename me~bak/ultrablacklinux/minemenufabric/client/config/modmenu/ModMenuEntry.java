@@ -1,6 +1,3 @@
-package me.ultrablacklinux.minemenufabric.client.config.modmenu;
-
-
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import me.shedaniel.autoconfig.AutoConfig;

@@ -1,5 +1,3 @@
-package me.ultrablacklinux.minemenufabric.client.config;
-
 import com.google.gson.JsonObject;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;
@@ -49,11 +47,11 @@ public class Config extends PartitioningSerializer.GlobalData {
         @ConfigEntry.Gui.Tooltip
         public String emptyItemIcon = "minecraft:air";
 
+        @ConfigEntry.Gui.Tooltip
         public boolean showTips = true;
 
+        @ConfigEntry.Gui.Tooltip
         public boolean repeatButton = true;
-
-        public boolean inScreenWalk = false;
 
         @ConfigEntry.Gui.Tooltip
         public boolean resetHeadCache = false;

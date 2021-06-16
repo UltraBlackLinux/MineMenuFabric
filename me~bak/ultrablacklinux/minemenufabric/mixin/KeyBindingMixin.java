@@ -1,10 +1,7 @@
-package me.ultrablacklinux.minemenufabric.mixin;
-
-import me.ultrablacklinux.minemenufabric.client.config.Config;
 import me.ultrablacklinux.minemenufabric.client.screen.MineMenuSelectScreen;
 import me.ultrablacklinux.minemenufabric.access.KeyBindingInterface;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.options.KeyBinding;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,8 +14,7 @@ public class KeyBindingMixin implements KeyBindingInterface {
 
     @Inject(method = "unpressAll()V", at = @At("HEAD"), cancellable = true)
     private static void unpressAll(CallbackInfo ci) {
-        if (MinecraftClient.getInstance().currentScreen instanceof MineMenuSelectScreen &&
-                Config.get().minemenuFabric.inScreenWalk) ci.cancel();
+        if (MinecraftClient.getInstance().currentScreen instanceof MineMenuSelectScreen) ci.cancel();
     }
 
     @Override

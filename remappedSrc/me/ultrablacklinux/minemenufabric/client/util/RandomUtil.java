@@ -23,9 +23,9 @@ import net.minecraft.util.registry.Registry;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RandomUtil {
-    private static GameProfile gameProfile;
+import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.datapath;
 
+public class RandomUtil {
     public static me.shedaniel.math.Color getColor(String inp) {
         long colorLong = Long.decode(inp);
         float f = (float) (colorLong >> 24 & 0xff) / 255F;
@@ -53,8 +53,8 @@ public class RandomUtil {
                     ItemStack finalOut = out;
                     Thread nbTater = new Thread(() -> {
                         NbtCompound skullTag = finalOut.getOrCreateTag();
-                        gameProfile = new GameProfile(null, skullowner);
-                        SkullBlockEntity.loadProperties(gameProfile, RandomUtil::setGameProfile);
+                        GameProfile gameProfile = new GameProfile(null, skullowner);
+                        gameProfile = SkullBlockEntity.loadProperties(gameProfile);
                         skullTag.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
                         MineMenuFabricClient.playerHeadCache.putIfAbsent(skullowner, finalOut);
                     });
@@ -63,7 +63,7 @@ public class RandomUtil {
 
                 } else out.removeSubTag("SkullOwner");
 
-            } catch (Exception e) {e.printStackTrace();}
+            } catch (Exception ignore) {ignore.printStackTrace();}
         } catch (InvalidIdentifierException e) {
             out = new ItemStack(Items.AIR);
         }
@@ -90,9 +90,5 @@ public class RandomUtil {
             assert client.player != null;
             client.player.sendMessage(new TranslatableText("minemenu.error.config"), false);
         }
-    }
-
-    private static void setGameProfile(GameProfile gpf) {
-        gameProfile = gpf;
     }
 }
