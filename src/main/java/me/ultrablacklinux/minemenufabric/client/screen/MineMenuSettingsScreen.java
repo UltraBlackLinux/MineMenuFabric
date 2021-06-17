@@ -12,6 +12,7 @@ import me.ultrablacklinux.minemenufabric.client.screen.util.MenuTypes;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
 import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -71,10 +72,10 @@ public class MineMenuSettingsScreen extends Screen {
         localDPath = repeat ? repeatDatapath : datapath;
         this.updateData();
 
-        System.out.println("----SettingsScreen----"); //TODO REMOVE
+        /*System.out.println("----SettingsScreen----"); //TODO REMOVE
         System.out.println(datapath);
         System.out.println(repeatDatapath);
-        System.out.println("-----------------------");
+        System.out.println("-----------------------");*/
     }
 
     private void updateData() {

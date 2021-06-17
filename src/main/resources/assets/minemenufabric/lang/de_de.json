@@ -46,5 +46,6 @@
   "minemenu.gui.noRepeat": "Nichts zum wiederholen!",
   "minemenu.gui.tip.Repeatedit": "Tipp: Zum bearbeiten der letzten Aktion du auf den wiederholen Knopf rechtsklicken!",
   "minemenu.gui.tip.Reverse": "Tipp: Um rückwärts durch manche Optionen zu wechseln, kannst du sie rechtsklicken!",
-  "minemenu.gui.toggle": "Umschalten"
+  "minemenu.gui.toggle": "Umschalten",
+  "minemenu.gui.config": "Konfiguration"
 }

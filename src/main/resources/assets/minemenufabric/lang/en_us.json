@@ -45,5 +45,6 @@
   "minemenu.gui.noRepeat": "Nothing to repeat!",
   "minemenu.gui.tip.Repeatedit": "Tip: You can edit your last action by rightclicking the repeat button!",
   "minemenu.gui.tip.Reverse": "Tip: You can cycle some settings in reverse by rightclicking them!",
-  "minemenu.gui.toggle": "Toggle"
+  "minemenu.gui.toggle": "Toggle",
+  "minemenu.gui.config": "Config"
 }

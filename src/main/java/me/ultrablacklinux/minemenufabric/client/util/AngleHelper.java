@@ -2,6 +2,10 @@ package me.ultrablacklinux.minemenufabric.client.util;
 
 import net.minecraft.client.MinecraftClient;
 
+/**
+ * (c) 2021 FlashyReese, Girafi
+ */
+
 public class AngleHelper {
 
     public static double getMouseAngle() {

@@ -46,7 +46,6 @@ public class Config extends PartitioningSerializer.GlobalData {
         @ConfigEntry.Gui.Tooltip
         public String secondaryColor = "#212121D0";
 
-        @ConfigEntry.Gui.Tooltip
         public String emptyItemIcon = "minecraft:air";
 
         public boolean showTips = true;
