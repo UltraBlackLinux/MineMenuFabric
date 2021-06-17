@@ -34,7 +34,8 @@
     "fabricloader": ">=0.11.3",
     "fabric": "*",
     "minecraft": "*",
-    "cloth-config2": ">=5.0.0"
+    "cloth-config2": ">=5.0.0",
+    "java": ">=16"
   },
   "custom": {
     "modmenu": [
