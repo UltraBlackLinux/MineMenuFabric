@@ -3,6 +3,7 @@ package me.ultrablacklinux.minemenufabric.client.screen;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.shedaniel.autoconfig.AutoConfig;
 import me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient;
 import me.ultrablacklinux.minemenufabric.client.config.Config;
 import me.ultrablacklinux.minemenufabric.client.util.AngleHelper;
@@ -22,6 +23,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Quaternion;
 import org.lwjgl.opengl.GL11;
 
 import java.net.URI;
@@ -35,7 +38,7 @@ import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
 
 
 /**
- * The original menu was by FlashyReese
+ * (c) 2021 UltraBlackLinux, FlashyReese
  */
 
 @SuppressWarnings("ConstantConditions")
@@ -45,6 +48,7 @@ public class MineMenuSelectScreen extends Screen {
     private final int circleEntries;
     private final int outerRadius;
     private final int innerRadius;
+    private static int animationStage;
 
     private ButtonWidget repeatButton;
 
@@ -55,9 +59,11 @@ public class MineMenuSelectScreen extends Screen {
         circleEntries = Config.get().minemenuFabric.menuEntries;
         outerRadius = Config.get().minemenuFabric.outerRadius;
         innerRadius = Config.get().minemenuFabric.innerRadius;
+        animationStage = 0;
     }
 
     public void tick() {
+        repeatButton.visible = Config.get().minemenuFabric.repeatButton;
         if (repeatButton.isHovered() && repeatData != null) {
             repeatButton.setMessage(Text.of(repeatData.get("name").getAsString()));
         }
@@ -73,7 +79,11 @@ public class MineMenuSelectScreen extends Screen {
                 new TranslatableText("minemenu.gui.repeat"), (buttonWidget) -> {
             if (repeatData != null) this.handleTypes(repeatData);
         }));
-        repeatButton.visible = Config.get().minemenuFabric.repeatButton;
+
+        this.addButton(new ButtonWidget(this.width - 90 , this.height  - 35, 75, 20,
+                new TranslatableText("minemenu.gui.config"), (buttonWidget) -> {
+            client.openScreen(AutoConfig.getConfigScreen(Config.class, this).get());
+        }));
     }
 
     @Override
@@ -140,9 +150,6 @@ public class MineMenuSelectScreen extends Screen {
                 }
             }
 
-            String itemName = value.get("name").getAsString().trim();
-            Text itemNameText = new TranslatableText(itemName);
-
             int primaryColor;
             try { primaryColor = RandomUtil.getColor(Config.get().minemenuFabric.primaryColor).getColor(); }
             catch (Exception e) { primaryColor = RandomUtil.getColor("#A00000CC").getColor(); }
@@ -152,30 +159,19 @@ public class MineMenuSelectScreen extends Screen {
             catch (Exception e) { secondaryColor = RandomUtil.getColor("#212121D0").getColor(); }
 
             if (isHovered) {
-                drawDoughnutSegment(matrixstack,
-                        currentAngle, currentAngle + degrees / 2, centerX, centerY,
-                        outerRadius + 5, innerRadius,
-                        primaryColor);
-                drawDoughnutSegment(matrixstack,
-                        currentAngle + degrees / 2, currentAngle + degrees, centerX, centerY,
-                        outerRadius + 5, innerRadius,
-                        primaryColor);
+                drawDoughnutSegment(matrixstack, currentAngle, currentAngle + degrees / 2, centerX
+                        , centerY, outerRadius + 5, innerRadius, primaryColor);
+                drawDoughnutSegment(matrixstack, currentAngle + degrees / 2, currentAngle +
+                        degrees, centerX, centerY, outerRadius + 5, innerRadius, primaryColor);
 
-                drawCenteredText(matrixstack, client.textRenderer, itemNameText, centerX,
-                        centerY + outerRadius + 20, 0xFFFFFF);
+                drawCenteredText(matrixstack, client.textRenderer, new TranslatableText(value.get("name").getAsString().trim()),
+                        centerX, centerY + outerRadius + 20, 0xFFFFFF);
 
             } else {
-                drawDoughnutSegment(matrixstack,
-                        currentAngle,
-                        currentAngle + degrees / 2, centerX, centerY,
-                        outerRadius, innerRadius,
-                        secondaryColor);
-                drawDoughnutSegment(matrixstack,
-                        currentAngle + degrees / 2,
-                        currentAngle + degrees,
-                        centerX, centerY,
-                        outerRadius, innerRadius,
-                        secondaryColor);
+                drawDoughnutSegment(matrixstack, currentAngle, currentAngle + degrees / 2, centerX, centerY,
+                        outerRadius, innerRadius, secondaryColor);
+                drawDoughnutSegment(matrixstack, currentAngle + degrees / 2, currentAngle + degrees,
+                        centerX, centerY, outerRadius, innerRadius, secondaryColor);
             }
 
             currentAngle += degrees;
@@ -196,8 +192,9 @@ public class MineMenuSelectScreen extends Screen {
                 }
                 return true;
             }
-            return super.mouseClicked(mouseX, mouseY, button);
+            else if (button != 0) return false;
         }
+
         int centerX = this.client.getWindow().getScaledWidth() / 2;
         int centerY = this.client.getWindow().getScaledHeight() / 2;
         if (!AngleHelper.isInsideCircle(mouseX, mouseY, centerX, centerY, innerRadius)
@@ -227,7 +224,7 @@ public class MineMenuSelectScreen extends Screen {
         else {
             this.client.openScreen(null);
         }
-        return false;
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -242,27 +239,33 @@ public class MineMenuSelectScreen extends Screen {
         float f1 = (float) (color >> 16 & 0xff) / 255F;
         float f2 = (float) (color >> 8 & 0xff) / 255F;
         float f3 = (float) (color & 0xff) / 255F;
-        matrixStack.push();
+        //matrixStack.push();
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+
+        if (animationStage < 100) animationStage += 3;
+        innerRingRadius *= animationStage /100d;
+        outerRingRadius *= animationStage /100d;
+
+        Matrix4f modelMatrix = matrixStack.peek().getModel();
         bufferBuilder.begin(GL11.GL_TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
         for (int i = startingAngle; i <= endingAngle; i++) {
             double x = Math.sin(Math.toRadians(i)) * innerRingRadius;
             double y = Math.cos(Math.toRadians(i)) * innerRingRadius;
-            bufferBuilder.vertex(centerX + x, centerY - y, 0).color(f1, f2, f3, f).next();
+            bufferBuilder.vertex(modelMatrix, (float) (centerX + x), (float) (centerY - y), 0).color(f1, f2, f3, f).next();
         }
         for (int i = endingAngle; i >= startingAngle; i--) {
             double x = Math.sin(Math.toRadians(i)) * outerRingRadius;
             double y = Math.cos(Math.toRadians(i)) * outerRingRadius;
-            bufferBuilder.vertex(centerX + x, centerY - y, 0).color(f1, f2, f3, f).next();
+            bufferBuilder.vertex(modelMatrix,  (float) (centerX + x), (float) (centerY - y), 0).color(f1, f2, f3, f).next();
         }
         bufferBuilder.end();
         BufferRenderer.draw(bufferBuilder);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
-        matrixStack.pop();
+        //matrixStack.pop();
     }
 
     private void handleTypes(JsonObject value) {

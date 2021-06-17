@@ -14,7 +14,7 @@
   ],
   "contact": {
     "homepage": "https://modrinth.com/mod/minemenufabric",
-    "issues": "https://github.com/UltraBlackLinux/MineMenuFabric/issues"
+    "issues": "https://github.com/UltraBlackLinux/MineMenuFabric/issues#oh-no-not-again"
   },
   "license": "MIT",
   "icon": "assets/minemenufabric/icon.png",
@@ -34,7 +34,6 @@
     "fabricloader": ">=0.11.3",
     "fabric": "*",
     "minecraft": "*",
-    "modmenu": ">=1.16.7",
     "cloth-config2": ">=4.10.6"
   },
   "custom": {
