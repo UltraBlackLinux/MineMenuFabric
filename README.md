@@ -3,12 +3,11 @@
 
 <a href="https://www.curseforge.com/minecraft/mc-mods/fabric-api"> <img src="https://i.imgur.com/Ol1Tcf8.png" width="171.8" height="57,6"> </a>
 
-# MineMenuFabric
-**Minemenu, but for Fabric**
+# MineMenu(for)Fabric
 
-Note: This project doesn't have anything to do with Girafi's Minemenu, This is only a fabric port!
+**Note: This project is completely seperate from Girafi's MineMenu mod - This is only a very customized port for the Fabric-modloader!**
 
-MineMenuFabric is a customizable menu, that lets you manage commands and chat messages in a simple, yet powerful circular menu
+MineMenuFabric  assists you with sending and queueing chat messages, copying text, opening links and even pressing (un)bound keybinds in a simple, yet powerful circular and customizable menu with support for categories.
 
 Supports enchanted/playerhead icons and copying text, opening links, saying a message in the chat and creating categories to keep your menu sorted!
 

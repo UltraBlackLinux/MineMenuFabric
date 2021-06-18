@@ -10,6 +10,7 @@ import me.ultrablacklinux.minemenufabric.client.util.AngleHelper;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
 import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
 import me.ultrablacklinux.minemenufabric.access.KeyBindingInterface;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -276,6 +277,7 @@ public class MineMenuSelectScreen extends Screen {
 
         switch (type) {
             case "empty":
+                close();
                 RandomUtil.openConfigScreen(this);
                 break;
 
@@ -289,18 +291,19 @@ public class MineMenuSelectScreen extends Screen {
 
 
             case "print":
+                close();
                 client.player.sendChatMessage(value.get("data").getAsString());
-                this.client.openScreen(null);
                 break;
 
             case "chatbox":
+                close();
                 client.openScreen(new ChatScreen(value.get("data").getAsString()));
                 break;
 
             case "clipboard":
+                close();
                 this.client.keyboard.setClipboard(value.get("data").getAsString());
                 client.player.sendMessage(new TranslatableText("minemenu.select.copied"), true);
-                this.client.openScreen(null);
                 break;
 
             /*case "keydetect":
@@ -327,8 +330,6 @@ public class MineMenuSelectScreen extends Screen {
                 break;*/
 
             case "keyselect":
-                if (client.currentScreen instanceof MineMenuSelectScreen) this.client.openScreen(null);
-
                 KeyBinding tmpBinding = keyBindings.stream()
                         .filter(keyBindingstream -> keyBindingstream.getTranslationKey().equals(value.get("data")
                                 .getAsJsonObject().get("key").getAsString())).findFirst().get();
@@ -345,10 +346,12 @@ public class MineMenuSelectScreen extends Screen {
                     if (delay != 25001) pressKey(false, tmpBinding);
                 });
 
+                close();
                 press.start();
                 break;
 
             case "link":
+                close();
                 String link = value.get("data").getAsString();
                 try {
                     if (!link.startsWith("http")) link = "http://" + link;
@@ -376,6 +379,10 @@ public class MineMenuSelectScreen extends Screen {
                 repeatDatapath = (ArrayList<String>) datapath.clone();
             }
         }
+    }
 
+    private static void close() {
+        MinecraftClient.getInstance().openScreen(null);
+        datapath = new ArrayList<>();
     }
 }
