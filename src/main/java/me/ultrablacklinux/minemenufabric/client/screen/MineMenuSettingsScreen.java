@@ -12,7 +12,6 @@ import me.ultrablacklinux.minemenufabric.client.screen.util.MenuTypes;
 import me.ultrablacklinux.minemenufabric.client.util.GsonUtil;
 import me.ultrablacklinux.minemenufabric.client.util.RandomUtil;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -45,7 +44,6 @@ public class MineMenuSettingsScreen extends Screen {
     private InputUtil.Key usedKey = null;
     private KeyBinding usedBinding = null;
     public static List<KeyBinding> keyBindings;
-    //int keyBindingsIndex = 0;
 
     private TextFieldWidget itemName;
     private TextFieldWidget iconDataText;
@@ -64,7 +62,7 @@ public class MineMenuSettingsScreen extends Screen {
     private boolean enchanted = false;
     private boolean firstRun = true;
     private int customModelData = 0;
-    private int keyBindReleaseTime = 0;
+    private int keyBindReleaseTime = 10;
 
     public MineMenuSettingsScreen(Screen parent, boolean repeat) {
         super(new TranslatableText("minemenu.settings.title"));
@@ -79,10 +77,6 @@ public class MineMenuSettingsScreen extends Screen {
     }
 
     private void updateData() {
-        /*if (localDPath == null) {
-            client.openScreen(null);
-            return;
-        }*/
         localData = minemenuData;
         for (String s : localDPath) localData = localData.get(s).getAsJsonObject();
     }
@@ -140,16 +134,7 @@ public class MineMenuSettingsScreen extends Screen {
 
         this.keyBindButton = this.addButton(new ButtonWidget(this.width / 2 - 100, 140, 200, 20,
                 InputUtil.UNKNOWN_KEY.getLocalizedText(), (buttonWidget) -> {
-            /*if (itemTypes == itemTypes.KEYDETECT) {
-                this.keyListenerActive = !this.keyListenerActive;
-                this.updateInput();
-                if (keyListenerActive) this.keyBindButton.setMessage((new LiteralText("> "))
-                        .append(this.keyBindButton.getMessage().shallowCopy().formatted(Formatting.YELLOW))
-                        .append(" <").formatted(Formatting.YELLOW)); //Definitely not stolen from minecraft's code
-            }
-            else */if (itemTypes == itemTypes.KEYSELECT) {
-                this.keyBindCycle(false);
-            }
+            if (itemTypes == itemTypes.KEYSELECT) this.keyBindCycle(false);
         }));
 
         this.itemType = this.addButton(new ButtonWidget(this.width / 2 - 100, 180, 200,
@@ -166,7 +151,7 @@ public class MineMenuSettingsScreen extends Screen {
         }
 
         this.keyBindreleaseSlider = this.addButton(new SliderWidget(this.width / 2 - 100, 160, 200,
-                20, LiteralText.EMPTY, this.keyBindReleaseTime / 25001D) {
+                20, LiteralText.EMPTY, (this.keyBindReleaseTime - 10) / (25001 - 10)) {
             { //hippedy, hoppedy, your code is now my property
                 this.updateMessage();
             }
@@ -183,7 +168,7 @@ public class MineMenuSettingsScreen extends Screen {
 
             protected void applyValue() {
                 MineMenuSettingsScreen.this.keyBindReleaseTime
-                        = MathHelper.floor(MathHelper.clampedLerp(0, 25001, this.value));
+                        = MathHelper.floor(MathHelper.clampedLerp(10, 25001, this.value));
             }
         });
 
@@ -200,7 +185,6 @@ public class MineMenuSettingsScreen extends Screen {
 
     private void keyBindCycle(boolean reverse) {
         int index = keyBindings.indexOf(usedBinding);
-        //KeyBindingHelper.getBoundKeyOf()
         if (this.usedBinding == null || (index == keyBindings.size() - 1 && !reverse)) {
             this.usedBinding = keyBindings.get(0);
         }
@@ -256,7 +240,7 @@ public class MineMenuSettingsScreen extends Screen {
                 break;
         }
 
-        if (/*itemTypes == MenuTypes.KEYDETECT ||*/ itemTypes == MenuTypes.KEYSELECT) {
+        if (itemTypes == MenuTypes.KEYSELECT) {
             this.keyBindButton.visible = true;
             this.keyBindreleaseSlider.visible = true;
             this.itemData.visible = false;
@@ -277,13 +261,6 @@ public class MineMenuSettingsScreen extends Screen {
                 } catch (Exception ingore) {}
                 this.itemData.setEditable(true);
                 break;
-
-            /*case KEYDETECT:
-                this.itemData.setEditable(false);
-                try {
-                    this.keyBindButton.setMessage(this.usedKey.getLocalizedText());
-                } catch (Exception ingore) {}
-                break;*/
 
             case KEYSELECT:
                 this.itemData.setEditable(false);
@@ -489,11 +466,6 @@ public class MineMenuSettingsScreen extends Screen {
                 subDataOut = new JsonPrimitive(dataTextOut);
                 break;
 
-            /*case KEYDETECT:
-                subDataOut.getAsJsonObject().add("key", new JsonPrimitive(this.usedKey.getTranslationKey()));
-                subDataOut.getAsJsonObject().add("releaseDelay", new JsonPrimitive(keyBindReleaseTime));
-                break;*/
-
             case KEYSELECT:
                 subDataOut.getAsJsonObject().add("key", new JsonPrimitive(this.usedBinding.getTranslationKey()));
                 subDataOut.getAsJsonObject().add("releaseDelay", new JsonPrimitive(keyBindReleaseTime));
@@ -536,11 +508,6 @@ public class MineMenuSettingsScreen extends Screen {
             case CHATBOX:
                 this.itemData.setText(data.get("data").getAsString());
                 break;
-
-            /*case KEYDETECT:
-                this.usedKey = InputUtil.fromTranslationKey(data.get("data").getAsJsonObject().get("key").getAsString());
-                this.keyBindReleaseTime = data.get("data").getAsJsonObject().get("releaseDelay").getAsInt();
-                break;*/
 
             case KEYSELECT:
                 try {
