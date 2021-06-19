@@ -9,6 +9,4 @@
 
 MineMenuFabric  assists you with sending and queueing chat messages, copying text, opening links and even pressing (un)bound keybinds in a simple, yet powerful circular and customizable menu with support for categories.
 
-Supports enchanted/playerhead icons and copying text, opening links, saying a message in the chat and creating categories to keep your menu sorted!
-
 Thanks to Girafi for the original mod [❤️](https://www.curseforge.com/minecraft/mc-mods/minemenu)
