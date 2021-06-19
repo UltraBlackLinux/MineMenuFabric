@@ -280,7 +280,6 @@ public class MineMenuSelectScreen extends Screen {
 
         switch (type) {
             case "empty":
-                close();
                 RandomUtil.openConfigScreen(this);
                 break;
 
