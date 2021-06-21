@@ -43,8 +43,12 @@
   "minemenu.gui.noRepeat": "Nic do powtórzenia!",
   "minemenu.gui.tip.Repeatedit": "Wskazówka: Możesz edydtować swoją ostatnią czynność poprzez naciśnięcia prawygo przycisku maszy nad przyciskiem \"Powtórz\"!",
   "minemenu.gui.tip.Reverse": "Wskazówka: Możesz cofać opcję wyboru poprzez naciśnięcie prawego przycisku myszy!",
+  "minemenu.gui.tip.Playerhead": "Wskazówka: Możesz użyć głów graczy jako ikony!",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.showTips": "Pokaż wskazówki",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.repeatButton": "Pokaż przycisk \"Powtórz",
   "minemenu.gui.toggle": "Przełącz",
-  "minemenu.gui.config": "Konfiguracja"
+  "minemenu.gui.config": "Konfiguracja",
+  "minemenu.setting.MenuTypes.Printmany": "Powiedz wielokrotnie",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.multiPrintSeparator": "Powiedz wielokrotnie - Separator",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.multiPrintDelay": "Powiedz wielokrotnie - Opóźnienie"
 }

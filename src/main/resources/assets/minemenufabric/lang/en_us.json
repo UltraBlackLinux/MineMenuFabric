@@ -14,6 +14,8 @@
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.primaryColor.@Tooltip": "Hex color - Supports \"#\", \"0x\" and more",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.secondaryColor": "Idle Color",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.secondaryColor.@Tooltip": "Hex color - Supports \"#\", \"0x\" and more",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.multiPrintSeparator": "Say-multiple sepatator",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.multiPrintDelay": "Say-multiple delay",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon": "Placeholder Icon",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.showTips": "Show Tips",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.repeatButton": "Show repeat-button",
@@ -27,6 +29,7 @@
   "minemenu.setting.itemconfigcycle.Custommodeldata": "CustomModelData",
   "minemenu.setting.itemconfigcycle.Skullowner": "Skullowner",
   "minemenu.setting.MenuTypes.Print": "Say",
+  "minemenu.setting.MenuTypes.Printmany": "Say multiple",
   "minemenu.setting.MenuTypes.Clipboard": "Copy to Clipboard",
   "minemenu.setting.MenuTypes.Link": "Open Link",
   "minemenu.setting.MenuTypes.Category": "Category",
@@ -45,6 +48,7 @@
   "minemenu.gui.noRepeat": "Nothing to repeat!",
   "minemenu.gui.tip.Repeatedit": "Tip: You can edit your last action by rightclicking the repeat button!",
   "minemenu.gui.tip.Reverse": "Tip: You can cycle some settings in reverse by rightclicking them!",
+  "minemenu.gui.tip.Playerhead": "Tip: You can use \"player_head\" as icon to use custom skulls!",
   "minemenu.gui.toggle": "Toggle",
   "minemenu.gui.config": "Config"
 }

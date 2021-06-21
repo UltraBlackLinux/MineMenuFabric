@@ -6,12 +6,11 @@ import net.minecraft.util.Nameable;
 
 public enum MenuTypes implements Nameable {
     PRINT,
+    PRINTMANY,
     CHATBOX,
     CLIPBOARD,
     LINK,
-    //KEYDETECT,
     KEYSELECT,
-
     CATEGORY,
     EMPTY;
 
