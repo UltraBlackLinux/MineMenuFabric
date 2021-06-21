@@ -37,14 +37,13 @@ import static me.ultrablacklinux.minemenufabric.client.MineMenuFabricClient.*;
 public class MineMenuSettingsScreen extends Screen {
     private MenuTypes itemTypes = MenuTypes.EMPTY;
     private IconConfigOptions iconConfigCycle = IconConfigOptions.ICON;;
-    private SliderWidget keyBindreleaseSlider;
+    private SliderWidget delayTimeSlider;
     private final Screen parent;
     private ArrayList<String> localDPath;
     private JsonObject localData;
     private InputUtil.Key usedKey = null;
     private KeyBinding usedBinding = null;
     public static List<KeyBinding> keyBindings;
-    //int keyBindingsIndex = 0;
 
     private TextFieldWidget itemName;
     private TextFieldWidget iconDataText;
@@ -63,7 +62,7 @@ public class MineMenuSettingsScreen extends Screen {
     private boolean enchanted = false;
     private boolean firstRun = true;
     private int customModelData = 0;
-    private int keyBindReleaseTime = 10;
+    private int delayTime = 10;
 
     public MineMenuSettingsScreen(Screen parent, boolean repeat) {
         super(new TranslatableText("minemenu.settings.title"));
@@ -118,10 +117,7 @@ public class MineMenuSettingsScreen extends Screen {
                 20, iconConfigCycle.getName(), (buttonWidget) -> {
             this.saveIcon();
             iconConfigCycle = iconConfigCycle.next();
-            if (iconConfigCycle == IconConfigOptions.SKULLOWNER &&
-                    !this.iconItem.replace("minecraft:", "").equals("player_head")) {
-                iconConfigCycle = iconConfigCycle.next();
-            }
+            if (!isSkull(iconItem) && iconConfigCycle == IconConfigOptions.SKULLOWNER) iconConfigCycle = iconConfigCycle.next();
             this.iconSettingType.setMessage(iconConfigCycle.getName());
             this.updateInput();
         }));
@@ -151,8 +147,8 @@ public class MineMenuSettingsScreen extends Screen {
             firstRun = false;
         }
 
-        this.keyBindreleaseSlider = this.addDrawableChild(new SliderWidget(this.width / 2 - 100, 160, 200,
-                20, LiteralText.EMPTY, (this.keyBindReleaseTime - 10) / (25001 - 10)) {
+        this.delayTimeSlider = this.addDrawableChild(new SliderWidget(this.width / 2 - 100, 160, 200,
+                20, LiteralText.EMPTY, (this.delayTime - 10) / (25001 - 10)) {
             { //hippedy, hoppedy, your code is now my property
                 this.updateMessage();
             }
@@ -163,12 +159,12 @@ public class MineMenuSettingsScreen extends Screen {
                 }
                 else {
                     this.setMessage(new TranslatableText("minemenu.setting.input.key.delay",
-                            MineMenuSettingsScreen.this.keyBindReleaseTime));
+                            MineMenuSettingsScreen.this.delayTime));
                 }
             }
 
             protected void applyValue() {
-                MineMenuSettingsScreen.this.keyBindReleaseTime
+                MineMenuSettingsScreen.this.delayTime
                         = MathHelper.floor(MathHelper.clampedLerp(10, 25001, this.value));
             }
         });
@@ -182,6 +178,12 @@ public class MineMenuSettingsScreen extends Screen {
                 ScreenTexts.DONE, (buttonWidget) -> close(false)));
 
         this.updateInput();
+    }
+
+    private boolean isSkull(String skull) {
+        String iconString = this.iconItem.replace("minecraft:", "");//only player_head works for custom skulls
+        if (iconString.equals("player_head")) return true;
+        return false;
     }
 
     private void keyBindCycle(boolean reverse) {
@@ -207,21 +209,6 @@ public class MineMenuSettingsScreen extends Screen {
 
     private void updateInput() {
         if (firstRun) return;
-        this.iconDataText.setEditable(iconConfigCycle != IconConfigOptions.ENCHANTED && itemTypes != MenuTypes.EMPTY);
-
-        if (itemTypes != MenuTypes.EMPTY) {
-            if (iconConfigCycle == iconConfigCycle.ENCHANTED) {
-                this.iconDataYesNo.visible = true;
-                this.iconDataText.visible = false;
-            }
-            else {
-                this.iconDataYesNo.visible = false;
-                this.iconDataText.visible = true;
-            }
-        }
-        else {
-            this.iconDataYesNo.visible = false;
-        }
 
         switch (iconConfigCycle) {
             case ICON:
@@ -237,24 +224,39 @@ public class MineMenuSettingsScreen extends Screen {
                 break;
 
             case SKULLOWNER:
-                iconDataText.setEditable(this.iconItem.replace("minecraft:", "").equals("player_head"));
+                iconDataText.setEditable(this.isSkull(iconItem));
                 this.iconDataText.setText(this.skullowner);
                 break;
         }
 
         if (itemTypes == MenuTypes.KEYSELECT) {
             this.keyBindButton.visible = true;
-            this.keyBindreleaseSlider.visible = true;
+            this.delayTimeSlider.visible = true;
             this.itemData.visible = false;
         }
         else {
             this.keyBindButton.visible = false;
-            this.keyBindreleaseSlider.visible = false;
+            this.delayTimeSlider.visible = false;
             this.itemData.visible = true;
+        }
+
+        if (itemTypes != MenuTypes.EMPTY) {
+            if (iconConfigCycle == iconConfigCycle.ENCHANTED) {
+                this.iconDataYesNo.visible = true;
+                this.iconDataText.visible = false;
+            }
+            else {
+                this.iconDataYesNo.visible = false;
+                this.iconDataText.visible = true;
+            }
+        }
+        else {
+            this.iconDataYesNo.visible = false;
         }
 
         switch(itemTypes) {
             case PRINT:
+            case PRINTMANY:
             case LINK:
             case CLIPBOARD:
             case CHATBOX:
@@ -276,9 +278,9 @@ public class MineMenuSettingsScreen extends Screen {
                 break;
         }
 
+        this.iconDataText.setEditable(iconConfigCycle != IconConfigOptions.ENCHANTED && itemTypes != MenuTypes.EMPTY);
         this.iconSettingType.setMessage(iconConfigCycle.getName());
         this.itemType.setMessage(itemTypes.getName());
-
         this.iconSettingType.active = itemTypes != MenuTypes.EMPTY;
         this.iconDataYesNo.active = iconConfigCycle == IconConfigOptions.ENCHANTED;
         if (iconConfigCycle != IconConfigOptions.ENCHANTED) this.iconDataYesNo.setMessage(Text.of(""));
@@ -315,6 +317,7 @@ public class MineMenuSettingsScreen extends Screen {
             }
             else if (iconSettingType.isMouseOver(mouseX, mouseY)) {
                 iconConfigCycle = iconConfigCycle.previous();
+                if (!isSkull(this.iconItem) && iconConfigCycle == IconConfigOptions.SKULLOWNER) iconConfigCycle = iconConfigCycle.previous();
                 this.iconSettingType.playDownSound(client.getSoundManager());
                 this.updateInput();
                 return true;
@@ -346,11 +349,9 @@ public class MineMenuSettingsScreen extends Screen {
     }
 
     public void resize(MinecraftClient client, int width, int height) {
-        String string = this.itemName.getText();
-        String string2 = this.iconDataText.getText();
         this.init(client, width, height);
-        this.itemName.setText(string);
-        this.iconDataText.setText(string2);
+        this.itemName.setText(this.itemName.getText());
+        this.iconDataText.setText( this.iconDataText.getText());
     }
 
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -430,7 +431,7 @@ public class MineMenuSettingsScreen extends Screen {
 
             case ICON:
                 this.iconItem = this.iconDataText.getText();
-                if (!iconItem.replace("minecraft:", "").equals("player_head")) this.skullowner = "";
+                if (!isSkull(iconItem)) this.skullowner = "";
                 break;
 
             case CUSTOMMODELDATA:
@@ -462,6 +463,7 @@ public class MineMenuSettingsScreen extends Screen {
                 break;
 
             case PRINT:
+            case PRINTMANY:
             case CHATBOX:
             case CLIPBOARD:
             case LINK:
@@ -470,7 +472,7 @@ public class MineMenuSettingsScreen extends Screen {
 
             case KEYSELECT:
                 subDataOut.getAsJsonObject().add("key", new JsonPrimitive(this.usedBinding.getTranslationKey()));
-                subDataOut.getAsJsonObject().add("releaseDelay", new JsonPrimitive(keyBindReleaseTime));
+                subDataOut.getAsJsonObject().add("releaseDelay", new JsonPrimitive(delayTime));
                 break;
 
             case CATEGORY:
@@ -505,6 +507,7 @@ public class MineMenuSettingsScreen extends Screen {
 
         switch (itemTypes) {
             case PRINT:
+            case PRINTMANY:
             case CLIPBOARD:
             case LINK:
             case CHATBOX:
@@ -517,8 +520,7 @@ public class MineMenuSettingsScreen extends Screen {
                             .filter(keyBindingstream -> keyBindingstream.getTranslationKey().equals(data.get("data")
                                     .getAsJsonObject().get("key").getAsString())).findFirst().get();
                 } catch (Exception e) {}
-
-                this.keyBindReleaseTime = data.get("data").getAsJsonObject().get("releaseDelay").getAsInt();
+                this.delayTime = data.get("data").getAsJsonObject().get("releaseDelay").getAsInt();
                 break;
         }
     }

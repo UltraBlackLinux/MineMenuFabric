@@ -294,6 +294,22 @@ public class MineMenuSelectScreen extends Screen {
                 client.player.sendChatMessage(value.get("data").getAsString());
                 break;
 
+            case "printmany":
+                Thread printer = new Thread(() -> {
+                    List<String> parts = Arrays.asList(value.get("data").getAsString().split(Config.get().minemenuFabric.multiPrintSeparator));
+
+                    parts.forEach(s -> {
+                        client.player.sendChatMessage(s);
+                        try {
+                        Thread.sleep(Config.get().minemenuFabric.multiPrintDelay);
+                        }
+                        catch (InterruptedException ignore) { }
+                    });
+                });
+                close();
+                printer.start();
+                break;
+
             case "chatbox":
                 close();
                 client.openScreen(new ChatScreen(value.get("data").getAsString()));

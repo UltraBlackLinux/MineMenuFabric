@@ -14,7 +14,6 @@ public class Config extends PartitioningSerializer.GlobalData {
     @ConfigEntry.Gui.TransitiveObject
     public MinemenuFabric minemenuFabric = new MinemenuFabric();
 
-
     public static void init() {
         AutoConfig.register(Config.class, PartitioningSerializer.wrap(GsonConfigSerializer::new));
     }
@@ -22,7 +21,6 @@ public class Config extends PartitioningSerializer.GlobalData {
     public static Config get() {
         return AutoConfig.getConfigHolder(Config.class).getConfig();
     }
-
 
     @me.shedaniel.autoconfig.annotation.Config(name = "MinemenuFabric")
     public static class MinemenuFabric implements ConfigData {
@@ -47,6 +45,10 @@ public class Config extends PartitioningSerializer.GlobalData {
         public String secondaryColor = "#212121D0";
 
         public String emptyItemIcon = "minecraft:air";
+
+        public String multiPrintSeparator = ";";
+
+        public int multiPrintDelay = 10;
 
         public boolean showTips = true;
 

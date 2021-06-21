@@ -1,5 +1,4 @@
 {
-
   "minemenu.default.title": "MineMenu",
   "minemenu.category": "MineMenu",
   "minemenu.key.open": "MineMenu öffnen",
@@ -15,6 +14,8 @@
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.primaryColor.@Tooltip": "Hex Farbe - Unterstützt \"#\", \"0x\" und mehr",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.secondaryColor": "Normale Farbe",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.secondaryColor.@Tooltip": "Hex Farbe - Unterstützt \"#\", \"0x\" und mehr",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.multiPrintSeparator": "Sage-mehrere Unterteiler",
+  "text.autoconfig.MinemenuFabric.option.minemenuFabric.multiPrintDelay": "Sage-mehrere Verzögerung",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.emptyItemIcon": "Platzhalter Icon",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.showTips": "Tipps anzeigen",
   "text.autoconfig.MinemenuFabric.option.minemenuFabric.inScreenWalk": "In-Menü Spieler Bewegung",
@@ -28,6 +29,7 @@
   "minemenu.setting.itemconfigcycle.Custommodeldata": "CustomModelData",
   "minemenu.setting.itemconfigcycle.Skullowner": "SkullOwner",
   "minemenu.setting.MenuTypes.Print": "Sage",
+  "minemenu.setting.MenuTypes.Printmany": "Sage mehrere",
   "minemenu.setting.MenuTypes.Clipboard": "In die Zwischenablage kopieren",
   "minemenu.setting.MenuTypes.Link": "Link öffnen",
   "minemenu.setting.MenuTypes.Category": "Kategorie",
@@ -45,7 +47,8 @@
   "minemenu.gui.repeat": "Wiederholen",
   "minemenu.gui.noRepeat": "Nichts zum wiederholen!",
   "minemenu.gui.tip.Repeatedit": "Tipp: Zum bearbeiten der letzten Aktion du auf den wiederholen Knopf rechtsklicken!",
-  "minemenu.gui.tip.Reverse": "Tipp: Um rückwärts durch manche Optionen zu wechseln, kannst du sie rechtsklicken!",
+  "minemenu.gui.tip.Reverse": "Tipp: Um rückwärts durch manche Optionen zu wechseln kannst du sie rechtsklicken!",
+  "minemenu.gui.tip.Playerhead": "Tipp: \"player_head\" als Icon erlaubt es Spielerköpfe zu benutzen!",
   "minemenu.gui.toggle": "Umschalten",
   "minemenu.gui.config": "Konfiguration"
 }
