@@ -297,9 +297,8 @@ public class MineMenuSelectScreen extends Screen {
             case "printmany":
                 Thread printer = new Thread(() -> {
                     List<String> parts = Arrays.asList(value.get("data").getAsString().split(Config.get().minemenuFabric.multiPrintSeparator));
-
                     parts.forEach(s -> {
-                        client.player.sendChatMessage(s);
+                        if (client.player != null) client.player.sendChatMessage(s);
                         try {
                         Thread.sleep(Config.get().minemenuFabric.multiPrintDelay);
                         }
