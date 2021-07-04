@@ -256,6 +256,7 @@ public class MineMenuSettingsScreen extends Screen {
             case LINK:
             case CLIPBOARD:
             case CHATBOX:
+            case PRINTMANY:
                 try {
                     this.itemData.setText(localData.get("data").getAsString());
                 } catch (Exception ingore) {}
@@ -463,6 +464,7 @@ public class MineMenuSettingsScreen extends Screen {
             case CHATBOX:
             case CLIPBOARD:
             case LINK:
+            case PRINTMANY:
                 subDataOut = new JsonPrimitive(dataTextOut);
                 break;
 
@@ -506,6 +508,7 @@ public class MineMenuSettingsScreen extends Screen {
             case CLIPBOARD:
             case LINK:
             case CHATBOX:
+            case PRINTMANY:
                 this.itemData.setText(data.get("data").getAsString());
                 break;
 
