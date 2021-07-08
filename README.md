@@ -7,6 +7,6 @@
 
 **Note: This project is completely seperate from Girafi's MineMenu mod - This is only a very customized port for the Fabric-modloader!**
 
-MineMenuFabric  assists you with sending and queueing chat messages, copying text, opening links and even pressing (un)bound keybinds in a simple, yet powerful circular and customizable menu with support for categories.
+MineMenuFabric assists you with sending single or multiple chat messages, queuing them, copying text, opening links and even pressing (un)bound keybinds in a simple, yet powerful circular and customizable menu with support for categories.
 
 Thanks to Girafi for the original mod [❤️](https://www.curseforge.com/minecraft/mc-mods/minemenu)
