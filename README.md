@@ -3,6 +3,10 @@
 
 <a href="https://www.curseforge.com/minecraft/mc-mods/fabric-api"> <img src="https://i.imgur.com/Ol1Tcf8.png" width="171.8" height="57,6"> </a>
 
+
+# NOTICE
+**Developement of this mod has stopped. I neither have time to work on this mod and nor do I have the motivation to work with Java anymore. Feel free to fork this, it's now abandoned. It's been a great time.**
+
 # MineMenu(for)Fabric
 
 **Note: This project is completely seperate from Girafi's MineMenu mod - This is only a very customized port for the Fabric-modloader!**
